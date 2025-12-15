@@ -4,13 +4,13 @@ close all
 
 addpath("E:\\matlab-code\\variable-projection\\tensor_toolbox")
 
-m=6;
-n=5;
-r=3;
+% m=6;
+% n=5;
+% r=3;
 
-% m=10;
-% n=8;
-% r=4;
+m=160;
+n=200;
+r=68;
 
 % m=10;
 % n=12;
@@ -49,22 +49,22 @@ H23 = H(1:m*n,(n+m)*r-r^2+1:m*n);
 %    0,0,0,0,0;
 %    0,0,0,0,0];   
 
-%%% (m,n,r)=(6 5 3)
-U=[1,2,1;
-   2,5,2;
-   3,4,5;
-   0,0,0;
-   0,0,0;
-   0,0,0];
+% %%% (m,n,r)=(6 5 3)
+% U=[1,2,1;
+%    2,5,2;
+%    3,4,5;
+%    0,0,0;
+%    0,0,0;
+%    0,0,0];
 
-V=[4,3,2;
-   3,2,2;
-   2,4,6;
-   0,0,0;
-   0,0,0];   
+% V=[4,3,2;
+%    3,2,2;
+%    2,4,6;
+%    0,0,0;
+%    0,0,0];   
    
-Utilde=U(1:r,1:r);
-Vtilde=V(1:r,1:r);
+% Utilde=U(1:r,1:r);
+% Vtilde=V(1:r,1:r);
 
 
 % %%%% (m,n,r)=(10 8 4)
@@ -88,19 +88,18 @@ Vtilde=V(1:r,1:r);
 %    7,3,4,5;
 %    8,2,2,2];  
 
+
+
 %%% (m,n,r)=(6 5 3)
-X=[1,4,2;
-   2,8,5;
-   3,2,11;
-   4,16,3;
-   5,6,7;
-   6,9,7];
-  
-Y=[1,3,5;
-   2,7,4;
-   3,1,2;
-   4,3,2;
-   5,4,3];  
+U=zeros(m,r);
+Utilde=rand(r,r);
+U(1:r,1:r)=Utilde;
+V=zeros(n,r);
+Vtilde=rand(r,r);
+V(1:r,1:r)=Vtilde;
+
+X=rand(m,r);
+Y=rand(n,r);  
 
 %%%% (m,n,r)=(10 12 5)
 % X=[1,4,2,3,4;
@@ -137,25 +136,25 @@ Y2=Y(r+1:n,1:r);
 % disp(H1'*khatrirao(U,Y));
 % fprintf("============= H1 right ==============\n");
 % disp(khatrirao(Utilde,Y1));
-% R1=H1'*khatrirao(U,Y)-khatrirao(Utilde,Y1);
-% fprintf("residual is %3.8f\n",norm(R1(:)));
+R1=H1'*khatrirao(U,Y)-khatrirao(Utilde,Y1);
+fprintf("residual is %3.8f\n",norm(R1(:)));
 
 % fprintf("============= H21 left ==============\n");
 % disp(H21'*khatrirao(U,Y));
 % fprintf("============= H21 right ==============\n");
 % disp(khatrirao(Utilde,Y2));
-% R2=H21'*khatrirao(U,Y)-khatrirao(Utilde,Y2);
-% fprintf("residual is %3.8f\n",norm(R2(:)));
+R2=H21'*khatrirao(U,Y)-khatrirao(Utilde,Y2);
+fprintf("residual is %3.8f\n",norm(R2(:)));
 
 % fprintf("============= H22 left ==============\n");
 % disp(H22'*khatrirao(U,Y));
-% R3=H22'*khatrirao(U,Y);
-% fprintf("residual is %3.8f\n",norm(R3(:)));
+R3=H22'*khatrirao(U,Y);
+fprintf("residual is %3.8f\n",norm(R3(:)));
 
 % fprintf("============= H23 left ==============\n");
 % disp(H23'*khatrirao(U,Y));
-% R4=H23'*khatrirao(U,Y);
-% fprintf("residual is %3.8f\n",norm(R4(:)));
+R4=H23'*khatrirao(U,Y);
+fprintf("residual is %3.8f\n",norm(R4(:)));
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -163,23 +162,23 @@ Y2=Y(r+1:n,1:r);
 % disp(H1'*khatrirao(X,V));
 % fprintf("============= H1 right ==============\n");
 % disp(khatrirao(X1,Vtilde));
-% R1=H1'*khatrirao(X,V)-khatrirao(X1,Vtilde);
-% fprintf("residual is %3.8f\n",norm(R1(:)));
+R1=H1'*khatrirao(X,V)-khatrirao(X1,Vtilde);
+fprintf("residual is %3.8f\n",norm(R1(:)));
 
 % fprintf("============= H21 left ==============\n");
 % disp(H21'*khatrirao(X,V));
-% R2=H21'*khatrirao(X,V);
-% fprintf("residual is %3.8f\n",norm(R2(:)));
+R2=H21'*khatrirao(X,V);
+fprintf("residual is %3.8f\n",norm(R2(:)));
 
 
 % fprintf("============= H22 left ==============\n");
 % disp(H22'*khatrirao(X,V));
 % fprintf("============= H22 right ==============\n");
 % disp(khatrirao(X2,Vtilde));
-% R3=H22'*khatrirao(X,V)-khatrirao(X2,Vtilde);
-% fprintf("residual is %3.8f\n",norm(R3(:)));
+R3=H22'*khatrirao(X,V)-khatrirao(X2,Vtilde);
+fprintf("residual is %3.8f\n",norm(R3(:)));
 
 % fprintf("============= H23 left ==============\n");
 % disp(H23'*khatrirao(X,V));
-% R4=H23'*khatrirao(X,V);
-% fprintf("residual is %3.8f\n",norm(R4(:)));
+R4=H23'*khatrirao(X,V);
+fprintf("residual is %3.8f\n",norm(R4(:)));

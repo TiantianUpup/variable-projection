@@ -1,17 +1,19 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% QRP test
-% A = [1, 2, 3, 4;
-%      2, 4, 6, 8;  % 线性相关行
-%      5, 6, 7, 8;
-%      9, 10, 11, 12];
-% disp(rank(A));
-% [Q, R, P] = qr(A);
-% disp(R);
-% fprintf("==================================\n");
-% disp(P);
-% fprintf("======================== Q'Q =====\n");
-% disp(Q'*Q);
-% fprintf("======================== QRP =====\n");
-% disp(Q*R*P');
+A = [1, 2, 3, 4;
+     2, 4, 6, 8;  % 线性相关行
+     5, 6, 7, 8;
+     9, 10, 11, 12];
+disp(rank(A));
+[Q, R, P] = qr(A);
+disp(R);
+fprintf("==================================\n");
+disp(P);
+fprintf("======================== Q'Q =====\n");
+disp(Q'*Q);
+fprintf("======================== QRP =====\n");
+disp(Q*R*P');
+
+disp(rank(R));
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% kron product test
@@ -50,13 +52,13 @@
 
 % disp(norm(A(:))^2);
 
-A=[1,2;
-   3,4;
-   5,6];
+% A=[1,2;
+%    3,4;
+%    5,6];
 
-Ai=sym_inv(A); 
-res=A*Ai*A-A;  
-AAi=A*Ai;
-res2=AAi'-AAi;
-disp(norm(res(:)));   
-disp(norm(res2(:)));   
+% Ai=sym_inv(A); 
+% res=A*Ai*A-A;  
+% AAi=A*Ai;
+% res2=AAi'-AAi;
+% disp(norm(res(:)));   
+% disp(norm(res2(:)));   

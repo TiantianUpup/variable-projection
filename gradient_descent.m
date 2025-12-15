@@ -1,4 +1,5 @@
-function [U,V] = gradient_descent(U0,V0,MA,alpha,beta,epsilon)
+function [U,V] = gradient_descent(U0,V0,MA,alpha,beta,epsilon,X)
+    % initial point
     U=U0;
     V=V0;
     gra = grad(U,V,MA);
@@ -12,7 +13,7 @@ function [U,V] = gradient_descent(U0,V0,MA,alpha,beta,epsilon)
     iter=0;
 
 
-    while (iter<1500 && norm(gra(:))>epsilon)
+    while (iter<5000 && norm(gra(:))>epsilon)
         kr=khatrirao(U,V);
         fprintf("the rank of kr is %d\n", rank(kr));
         
@@ -38,7 +39,7 @@ function [U,V] = gradient_descent(U0,V0,MA,alpha,beta,epsilon)
             % gn=gradient(U,V,MA);
             % fprintf("norm of the gradient is %3.4f\n",norm(gn(:)));
 
-            if fval(U_pre,V_pre,MA)-fval(U,V,MA)>alpha*t*norm(gra(:))^2
+            if fval(U_pre,V_pre,MA)-fval(U,V,MA)>=alpha*t*norm(gra(:))^2
                 flag=true;
                 fprintf("backtracking stepsize selection successful, step length is %3.4f\n",t);
                 break;
@@ -71,10 +72,18 @@ function [U,V] = gradient_descent(U0,V0,MA,alpha,beta,epsilon)
 
         fun_val=fval(U,V,MA);
 
-        %update the gradient
+        % update the gradient
         gra=grad(U,V,MA);
         grad_U=gra(1:m,1:r);
         grad_V=gra(m+1:m+n,1:r);
-        fprintf("iter_number=%d,norm_grad=%3.5f,fun_val=%3.5f\n",iter,norm(gra(:)),fun_val);
+
+
+        kr=khatrirao(U,V);
+        krmp=pinv(kr); % the Moore-Penrose inverse of U\odot V
+        What=MA'*krmp';
+        Xhat=generate_cp_tensor(U,V,What);
+        res=X-Xhat;
+
+        fprintf("iter_number=%d,norm_grad=%3.5f,fun_val=%3.5f,res=%3.5f\n",iter,norm(gra(:)),fun_val,norm(res(:)));
     end    
 end    

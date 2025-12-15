@@ -1,4 +1,5 @@
 function runhist = variable_projection_gamma(MA, rho,gamma,paras)
+    disp(paras);
     timect = cputime;
     m = paras.m;
     n = paras.n;
@@ -6,6 +7,7 @@ function runhist = variable_projection_gamma(MA, rho,gamma,paras)
     % U_0 and V_0
     U = rand(m,r);
     V = rand(n,r);
+    gra=grad(U,V,MA);
 
     U0=U;
     V0=V;
@@ -14,23 +16,30 @@ function runhist = variable_projection_gamma(MA, rho,gamma,paras)
 
     iter = 1; 
     %itmax = paras.itmax;
-    itmax=15;
+    itmax=5;
     epsilon=1e-4;
     lambda=0;
     % equation (27)
     J = zeros(r^2, r);
+
+    disp(size(J));
     J(1:r, 1:r) = eye(r);  
     L = zeros(r^2, r^2-r);
     L(r+1:r^2, 1:r^2-r) = eye(r^2-r);
+    disp(size(L));
 
-    gra=grad(U,V,MA);
+    % calculate the permutation matrix and its blocks
+    H = permutation(m,n,r);
+    H1 = H(1:m*n,1:r^2);
+    H21 = H(1:m*n,r^2+1:n*r);
+    H22 = H(1:m*n,n*r+1:(n+m)*r-r^2);
 
     %&& norm(gra(:))>epsilon
     MA_temp=MA;
     while (iter <= itmax && norm(gra(:))>epsilon)
-        % % check whether (U\odot V)-\in K(U\odot V)
-        % UVkr=khatrirao(U,V);
-        % fprintf("the rank of the UVkr is %d\n",rank(UVkr));
+        % check whether (U\odot V)-\in K(U\odot V)
+        UVkr=khatrirao(U,V);
+        fprintf("the rank of the UVkr is %d\n",rank(UVkr));
         % [a,b]=size(UVkr);
         % UVkrr=rank(UVkr);
         % [A,B,C]=qr(UVkr);
@@ -40,7 +49,11 @@ function runhist = variable_projection_gamma(MA, rho,gamma,paras)
         % UVi=C'*Z*A';
         % UViP=UVi*UVkr*UVi;
         % UV_res=UViP-UVi;
-        % fprintf("the residual is %3.8f\n", norm(UV_res(:))^2);
+
+        UVkri=sym_inv(UVkr);
+        UViP=UVkri*UVkr*UVkri;
+        UV_res=UViP-UVkri;
+        fprintf("the residual is %3.20f\n", norm(UV_res(:))^2);
 
         % calculate tildeV_1 and tildeU_1 via the generalized QR decompositions of U and V
         [P, Sigma, S] = qr(U);
@@ -52,21 +65,19 @@ function runhist = variable_projection_gamma(MA, rho,gamma,paras)
         Tau_1 = Tau(1:r, 1:r);
         tildeV_1 = Tau_1 * T;
 
+        % calculate M via the generalized QR decomposition of G
+        G = khatrirao(tildeU_1, tildeV_1);
+        [W, Db, F] = qr(G);
+        %F = F';
+        D = Db(1:r, 1:r);
+
         % calculate \overline{M(A)}
         kro = kron(P, Q);
         MA = kro' * MA;
 
-        % calculate the permutation matrix and its blocks
-        H = permutation(m,n,r);
-        H1 = H(1:m*n,1:r^2);
-        H21 = H(1:m*n,r^2+1:n*r);
-        H22 = H(1:m*n,n*r+1:(n+m)*r-r^2);
+       
         
-        % calculate M via the generalized QR decomposition of G
-        G = khatrirao(Sigma_1 * S, Tau_1 * T);
-        [W, Db, F] = qr(G);
-        %F = F';
-        D = Db(1:r, 1:r);
+       
 
         HWJ = H1 * W * J;
         % inv(D) = D\I

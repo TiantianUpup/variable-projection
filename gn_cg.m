@@ -41,5 +41,4 @@ function x = gn_cg(A,b,paras)
     runhist.r_norm = r_norm;
     runhist.x = x;
     runhist.iter = iter;
-    
 end
