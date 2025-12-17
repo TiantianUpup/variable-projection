@@ -4,7 +4,7 @@ close all
 
 
 addpath("E:\\matlab-code\\variable-projection\\tensor_toolbox")
-m=10;
+m=;
 n=10;
 p=10;
 

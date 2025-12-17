@@ -5,9 +5,9 @@ close all
 
 addpath("E:\\matlab-code\\variable-projection\\tensor_toolbox")
 
-m=20;
-n=20;
-p=20;
+m=10;
+n=10;
+p=10;
 
 % m=2;
 % n=3;
@@ -23,7 +23,7 @@ X=generate_cp_tensor(U,V,W);
 MA=khatrirao(U,V)*W';
 
 % rank 1 approximation
-r=1;
+r=2;
 U = rand(m,r);
 V = rand(n,r);
 alpha=0.25;

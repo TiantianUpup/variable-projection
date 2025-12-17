@@ -23,6 +23,7 @@ function X=Aope(Aparas,paras,J,gamma,lambda)
     J3=J(m+1:m+r,1:r);
     J4=J(m+r+1:m+n,1:r);
     
+    % These codes can be optimized, khatrirao(tildeU_1,J4)=T1, khatrirao(J2,tildeV_1)=T2 
     S1=A'*(khatrirao(tildeU_1,J3)+khatrirao(J1,tildeV_1))*C;
     S2=khatrirao(tildeU_1,J4)*C;
     S3=khatrirao(J2,tildeV_1)*C;

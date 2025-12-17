@@ -8,10 +8,12 @@ function runhist = low_rank_app (U,V,W)
     
     [m,r]=size(U);
     [n,r]=size(V);
+    [p,r]=size(W);
 
     paras.m=m;
     paras.n=n;
-    paras.r=4;
+    paras.p=p;
+    paras.r=2;
     paras.itmax=150;
     rho=0.75;
     paras.tol=1e-4;

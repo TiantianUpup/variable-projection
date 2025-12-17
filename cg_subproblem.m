@@ -1,5 +1,5 @@
 function runhist = cg_subproblem (Aparas, paras, B, gamma,lambda)
-    %fprintf("lambda is %3.4f\n",lambda);
+    fprintf("gamma is %d\n",gamma);
     % convergence condition
     %itmax=paras.itmax;
     itmax = 500;
@@ -10,13 +10,14 @@ function runhist = cg_subproblem (Aparas, paras, B, gamma,lambda)
     r = paras.r;
     m=paras.m;
     n=paras.n;
-    X = zeros(m+n, r);
+    X = zeros(m+n, r); % direction D=[A;B];
     % calculation of R
     R = B;
 
     iter = 0;
     R_norm = norm(R(:));
 
+    fprintf("R norm is %3.4f\n",norm(R_norm(:)));
     while (iter < itmax && R_norm > tol)
         % step 1
         iter = iter + 1;
