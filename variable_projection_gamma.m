@@ -1,12 +1,12 @@
-function runhist = variable_projection_gamma(MA, rho,gamma,paras)
+function runhist = variable_projection_gamma(U0,V0,MA,rho,gamma,paras)
     timect = cputime;
     m = paras.m;
     n = paras.n;
     r = paras.r;
 
     % U_0 and V_0
-    U = rand(m,r);
-    V = rand(n,r);
+    U = U0;
+    V = V0;
     gra=grad(U,V,MA);
 
     fprintf("variable_projection_gamma method, the initial objective value fval is %3.4f\n",fval(U,V,MA));
@@ -141,9 +141,13 @@ function runhist = variable_projection_gamma(MA, rho,gamma,paras)
 
        %% check whether [A;B] is the descent direction
         dir=[A;B];
+        gra_gra_inner=-norm(gra(:))^2;
         gra_direction_inner=trace(gra'*dir);
-        fprintf("========================= gra_direction_inner is %3.10f\n",gra_direction_inner);
+        fprintf("========================= gra_direction_inner is %3.10f, gra_gra_inner is %3.10f\n",gra_direction_inner,gra_gra_inner);
     
+        if gra_direction_inner < gra_gra_inner 
+            fprintf("-------------------------------- gauss-newton direction --------------------------------------------\n");
+        end    
         % if gra_direction_inner<0
         %     fprintf("gauss-newton direction, the norm of the gauss-newton direction is %3.8f\n",norm(dir(:)));
         % else
@@ -237,5 +241,5 @@ function runhist = variable_projection_gamma(MA, rho,gamma,paras)
     runhist.U = U;
     runhist.V = V;
     runhist.iter = iter;
-    runhist.vp_cput = cputime - timect;
+    runhist.cput = cputime - timect;
 end

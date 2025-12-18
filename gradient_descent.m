@@ -1,4 +1,5 @@
-function [U,V] = gradient_descent(U0,V0,MA,alpha,beta,epsilon,X)
+function runhist = gradient_descent(U0,V0,MA,alpha,beta,epsilon)
+    timect = cputime;
     % initial point
     U=U0;
     V=V0;
@@ -13,7 +14,7 @@ function [U,V] = gradient_descent(U0,V0,MA,alpha,beta,epsilon,X)
     iter=0;
 
 
-    while (iter<5000 && norm(gra(:))>epsilon)
+    while (iter<150 && norm(gra(:))>epsilon)
         kr=khatrirao(U,V);
         fprintf("the rank of kr is %d\n", rank(kr));
         
@@ -78,12 +79,17 @@ function [U,V] = gradient_descent(U0,V0,MA,alpha,beta,epsilon,X)
         grad_V=gra(m+1:m+n,1:r);
 
 
-        kr=khatrirao(U,V);
-        krmp=pinv(kr); % the Moore-Penrose inverse of U\odot V
-        What=MA'*krmp';
-        Xhat=generate_cp_tensor(U,V,What);
-        res=X-Xhat;
+        % kr=khatrirao(U,V);
+        % krmp=pinv(kr); % the Moore-Penrose inverse of U\odot V
+        % What=MA'*krmp';
+        % Xhat=generate_cp_tensor(U,V,What);
+        % res=X-Xhat;
 
-        fprintf("iter_number=%d,norm_grad=%3.5f,fun_val=%3.5f,res=%3.5f\n",iter,norm(gra(:)),fun_val,norm(res(:)));
-    end    
+        fprintf("iter_number=%d,norm_grad=%3.5f,fun_val=%3.5f\n",iter,norm(gra(:)),fun_val);
+    end  
+    
+    runhist.iter=iter;
+    runhist.U=U;
+    runhist.V=V;
+    runhist.cput=cputime-timect;
 end    

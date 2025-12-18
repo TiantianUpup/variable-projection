@@ -14,7 +14,7 @@ function runhist = LM_method(MA, rho,gamma,paras)
 
     iter = 1;
     %itmax = paras.itmax;
-    itmax=5;
+    itmax=150;
     epsilon=1e-4;
     % equation (27)
     J = zeros(r^2, r);
@@ -42,7 +42,7 @@ function runhist = LM_method(MA, rho,gamma,paras)
 
         % calculate \overline{M(A)}
         kro = kron(P, Q);
-        MA = kro' * MA;
+        MA = kro' * MA_temp;
 
         % calculate the permutation matrix and its blocks
         H = permutation(m,n,r);

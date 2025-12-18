@@ -10,17 +10,21 @@ function runhist = low_rank_app (U,V,W)
     [n,r]=size(V);
     [p,r]=size(W);
 
+    r=2;
     paras.m=m;
     paras.n=n;
     paras.p=p;
-    paras.r=2;
+    paras.r=r;
     paras.itmax=150;
     rho=0.75;
     paras.tol=1e-4;
 
     gamma=1;
 
-    runhist_vp = variable_projection_gamma(MA,rho,gamma,paras);
+    U = rand(m,r);
+    V = rand(n,r);
+
+    runhist_vp = variable_projection_gamma(U,V,MA,rho,gamma,paras);
     %runhist_vp = variable_projection(MA, rho, paras,X);
     %runhist_vp = LM_method(MA,rho,gamma,paras);
     Uhat = runhist_vp.U;

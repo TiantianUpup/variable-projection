@@ -1,11 +1,11 @@
-function [U,V] = gauss_newton_original(MA, paras)
+function runhist = gauss_newton_original(U0,V0,MA, paras)
     timect = cputime;
     m = paras.m;
     n = paras.n;
     r = paras.r;
     % U_0 and V_0
-    U = rand(m,r);
-    V = rand(n,r);
+    U = U0;
+    V = V0;
 
     fprintf("variable_projection_gamma method, the initial objective value fval is %3.4f\n",fval(U,V,MA));
 
@@ -56,5 +56,8 @@ function [U,V] = gauss_newton_original(MA, paras)
         fprintf("iter=%d, gradient norm is %3.8f\n", iter, norm(gra(:)));
     end
 
-    
+    runhist.iter=iter;
+    runhist.U=U;
+    runhist.V=V;
+    runhist.cput=cputime-timect;
 end    
