@@ -114,6 +114,11 @@ end
 U = Uinit;
 fit = 0;
 
+P_pre=ktensor(U);
+P_tensor_pre=tensor(P_pre);
+fval_init=0.5*norm(P_tensor_pre-X)^2;
+fval_pre=fval_init;
+
 % Store the last MTTKRP result to accelerate fitness computation.
 U_mttkrp = zeros(size(X, dimorder(end)), R);
 
@@ -173,17 +178,17 @@ else
         
         % Iterate over all N modes of the tensor
         for n = dimorder(1:end)
-            
             % Calculate Unew = X_(n) * khatrirao(all U except n, 'r').
-            Unew = mttkrp(X,U,n);
+            Unew = mttkrp(X,U,n);  % equation (2.6), Unew <=> Y
             % Save the last MTTKRP result for fitness check.
             if n == dimorder(end)
               U_mttkrp = Unew;
             end
             
             % Compute the matrix of coefficients for linear system
-            Y = prod(UtU(:,:,[1:n-1 n+1:N]),3);
-            Unew = Unew / Y;
+            Y = prod(UtU(:,:,[1:n-1 n+1:N]),3); % Y<=>Z
+
+            Unew = Unew / Y; 
             if issparse(Unew)
                 Unew = full(Unew);   % for the case R=1
             end
@@ -202,43 +207,67 @@ else
         end
         
         P = ktensor(lambda,U);
+        P_tensor=tensor(P);
 
-        % This is equivalent to innerprod(X,P).
-        iprod = e * (P.U{dimorder(end)} .* U_mttkrp) * lambda;
-        
-        % This is equivalent to norm(P)^2
-        tmpvecs(:,1:N) = reshape(UtU,[],N);
-        tmpvecs(:,N+1) = reshape(lambda*lambda',[],1);
-        normPsqr = sum( prod(tmpvecs,2) ) ;
-    
-        if normX == 0
-            fit = normPsqr - 2 * iprod;
-        else
-            normresidual = sqrt( normX^2 + normPsqr - 2 * iprod );
-            fit = 1 - (normresidual / normX); %fraction explained by model
-        end
-        fitchange = abs(fitold - fit);
-        
-        % Check for convergence
-        if (iter > 1) && (fitchange < fitchangetol)
-            flag = 0;
-        else
-            flag = 1;
-        end
-        
-        if (mod(iter,printitn)==0) || ((printitn>0) && (flag==0))
-            fprintf(' Iter %2d: f = %e f-delta = %7.1e\n', iter, fit, fitchange);
-        end
-        
-        if dotrace
-            fittrace(iter) = fit;
-            timetrace(iter) = toc(itertime);
-        end
+        fval_cur=0.5*norm(P_tensor-X)^2;
+        relfval=abs(fval_pre-fval_cur)/fval_init;
+        fval_pre=fval_cur;
 
-        % Check for convergence
-        if (flag == 0)
+        relstep=norm(P_tensor-P_tensor_pre)/norm(P_tensor);
+
+        P_tensor_pre=P_tensor;
+
+        fprintf("------------------------------------ relstep is %3.10f,relfval is %3.10f\n -------------",relstep,relfval);
+        
+         if relfval<1e-12
+            fprintf("------------------------------------ relfval is less than 1e-12\n -------------");
             break;
-        end        
+        end   
+        if relstep<1e-6
+            fprintf("------------------------------------ relstep is less than 1e-6\n -------------");
+            break;
+        end    
+
+
+
+
+
+        % % This is equivalent to innerprod(X,P).
+        % iprod = e * (P.U{dimorder(end)} .* U_mttkrp) * lambda;
+        
+        % % This is equivalent to norm(P)^2
+        % tmpvecs(:,1:N) = reshape(UtU,[],N);
+        % tmpvecs(:,N+1) = reshape(lambda*lambda',[],1);
+        % normPsqr = sum( prod(tmpvecs,2) ) ;
+    
+        % if normX == 0
+        %     fit = normPsqr - 2 * iprod;
+        % else
+        %     normresidual = sqrt( normX^2 + normPsqr - 2 * iprod );
+        %     fit = 1 - (normresidual / normX); %fraction explained by model
+        % end
+        % fitchange = abs(fitold - fit);
+        
+        % % Check for convergence
+        % if (iter > 1) && (fitchange < fitchangetol)
+        %     flag = 0;
+        % else
+        %     flag = 1;
+        % end
+        
+        % if (mod(iter,printitn)==0) || ((printitn>0) && (flag==0))
+        %     fprintf(' Iter %2d: f = %e f-delta = %7.1e\n', iter, fit, fitchange);
+        % end
+        
+        % if dotrace
+        %     fittrace(iter) = fit;
+        %     timetrace(iter) = toc(itertime);
+        % end
+
+        % % Check for convergence
+        % if (flag == 0)
+        %     break;
+        % end        
     end   
 end
 

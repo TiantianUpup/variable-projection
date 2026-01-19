@@ -15,7 +15,7 @@ if ~exist('name','var')
     name = 'ans';
 end
 
-fprintf(1,'%s is a tensor of size %s\n',name,tt_size2str(X.size));
+fprintf(1,'%s is a %s of size %s\n',name,class(X),tt_size2str(X.size));
 
 if isempty(X.data)
     fprintf(1,'\t%s = []\n',name);

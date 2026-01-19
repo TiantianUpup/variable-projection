@@ -15,7 +15,7 @@ if ~exist('name','var')
     name = 'ans';
 end
 
-fprintf('%s is a ktensor of size %s\n', name, tt_size2str(size(t)));
+fprintf('%s is a %s of size %s\n', name, class(t), tt_size2str(size(t)));
 output = tt_matrix2cellstr(t.lambda');
 fprintf('\t%s.lambda = \n',name);
 fprintf('\t\t%s\n',output{:});

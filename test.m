@@ -6,7 +6,7 @@ close all
 addpath("E:\\matlab-code\\variable-projection\\tensor_toolbox")
 m=10;
 n=10;
-p=10;
+p=200;
 
 % m=2;
 % n=3;
@@ -16,7 +16,7 @@ r=5;
 % truth factor matrices
 U = rand(m,r);
 V = rand(n,r);
-W = rand(p,r);
+W = rand(p,r); 
 
 X=generate_cp_tensor(U,V,W);
 

@@ -1,19 +1,19 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% QRP test
-A = [1, 2, 3, 4;
-     2, 4, 6, 8;  % 线性相关行
-     5, 6, 7, 8;
-     9, 10, 11, 12];
-disp(rank(A));
-[Q, R, P] = qr(A);
-disp(R);
-fprintf("==================================\n");
-disp(P);
-fprintf("======================== Q'Q =====\n");
-disp(Q'*Q);
-fprintf("======================== QRP =====\n");
-disp(Q*R*P');
+% A = [1, 2, 3, 4;
+%      2, 4, 6, 8;  % 线性相关行
+%      5, 6, 7, 8;
+%      9, 10, 11, 12];
+% disp(rank(A));
+% [Q, R, P] = qr(A);
+% disp(R);
+% fprintf("==================================\n");
+% disp(P);
+% fprintf("======================== Q'Q =====\n");
+% disp(Q'*Q);
+% fprintf("======================== QRP =====\n");
+% disp(Q*R*P');
 
-disp(rank(R));
+% disp(rank(R));
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% kron product test
@@ -62,3 +62,36 @@ disp(rank(R));
 % res2=AAi'-AAi;
 % disp(norm(res(:)));   
 % disp(norm(res2(:)));   
+
+
+% Q=orth(randn(5,3));
+% disp(size(Q));
+% disp(Q'*Q);
+% fprintf("===================================\n");
+% disp(Q*Q');
+
+m=5;
+r=3;
+A=rand(m,r);
+disp(A);
+tic
+[Q,R,p]=qr(A,0);
+
+disp(Q);
+disp(R);
+I=eye(r);
+P=I(p,:);
+toc 
+% disp(P);
+% disp(P'*P);
+
+disp(Q*R*P);
+tic
+[Q,R,P]=qr(A);
+toc 
+% fprintf("Q is \n");
+% disp(Q);
+% fprintf("R is \n");
+% disp(R);
+% fprintf("P is \n");
+% disp(P);

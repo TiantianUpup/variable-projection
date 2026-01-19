@@ -15,7 +15,7 @@ function runhist = gauss_newton_original(U0,V0,MA, paras)
     iter=0;
 
     itmax=150;
-    epsilon=1e-4;
+    epsilon=1e-6;
     while (iter < itmax && norm(gra(:))>epsilon)
         iter=iter+1;
         Lparas.U=U;
@@ -35,7 +35,7 @@ function runhist = gauss_newton_original(U0,V0,MA, paras)
         fprintf("fval(U_pre,V_pre,MA) is %3.8f\n",fval(U_pre, V_pre,MA));
 
         alpha=1e-3;
-        t=1;
+        t=1.25;
         beta=0.8;
         for i=1:150
             t=beta*t;

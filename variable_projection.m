@@ -7,7 +7,6 @@ function runhist = variable_projection(MA, rho, paras,X)
     U = rand(m,r);
     V = rand(n,r);
 
-    
     fprintf("the initial objective value fval is %3.4f\n",fval(U,V,MA));
 
     iter = 1;

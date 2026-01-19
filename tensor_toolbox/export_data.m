@@ -103,7 +103,7 @@ function export_data(A, fname, varargin)
 
 %% Parse the inputs
 p = inputParser;
-addRequired(p,'A',@isobject);
+addRequired(p,'A');
 addRequired(p,'fname',@ischar);
 addParameter(p,'fmt_data', '%.16e', @ischar);
 addParameter(p,'fmt_lambda', '%.16e', @ischar);

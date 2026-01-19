@@ -33,11 +33,15 @@ function [X, stat] = cp_spm(T, varargin)
 %              orthogonal to the remaining a_i. In this case, the power
 %              method is stuck in an almost saddle point, and it is faster
 %              to just reinitialize the power method.
-%                    
+%      'adaptive' - If true, chooses shifts that depend on current function 
+%              value, inspired by Kolda-Mayo's adaptive shifted power method.
+%              Default is true. If false, uses a constant shift as described
+%              in the paper.
+%
 %
 %   Reference:
 %   * J. Kileel, J. M. Pereira, Subspace power method for symmetric tensor
-%                           decomposition and generalized PCA
+%                           decomposition, Numerical Algorithms (2025).
 %   
 %   See also the SPM repository:
 %     <a href="https://github.com/joaompereira/SPM">https://github.com/joaompereira/SPM</a>
@@ -74,6 +78,7 @@ function [X, stat] = cp_spm(T, varargin)
     params.addParameter('rank_sel', 1e-4);
     params.addParameter('reinit_tol', 5e-3/sqrt(n), @(x) x>0);
     params.addParameter('restart_tol', 1e-3, @(x) x>0);
+    params.addParameter('adaptive', true, @(x) islogical(x));
     params.parse(varargin{:});
 
     opts = params.Results;
@@ -192,12 +197,8 @@ function [X, stat] = cp_spm(T, varargin)
         lambda = zeros(1,r);
     end
 
-    % C_n from Lemma 4.7
-    if nd2<=4
-      cn = sqrt(2*(nd2-1)/nd2);
-    else
-      cn = (2-sqrt(2))*sqrt(nd2);
-    end
+    % C_n from Lemma 4.4
+    cn = sqrt((nd2-1)/nd2);
 
     lap = toc(timer);
     stat.extracttime = lap;
@@ -215,7 +216,7 @@ function [X, stat] = cp_spm(T, varargin)
         for tries = 1:opts.ntries
           
           % Initialize Xk
-          Ak = randn(n,1);
+          Ak = reshape(randn(1, n^(nd2-1)) * V_, n, k) * randn(k, 1);
           Ak = Ak/norm(Ak);
         
           for iter = 1:opts.maxiter
@@ -235,9 +236,14 @@ function [X, stat] = cp_spm(T, varargin)
 
             % Determine optimal shift
             % Sometimes due to numerical error f can be greater than 1
-            f_ = max(min(f,1),.5);
-            clambda = sqrt(f_*(1-f_));
-            shift = cn*clambda;
+            if ~opts.adaptive
+                clambda = 1;
+            elseif f > 2/3
+                clambda = sqrt(2*f*max(1-f, 0));
+            else
+                clambda = 1 - f/2;
+            end
+            shift = clambda * cn;
 
             if f < opts.reinit_tol
                 % Xk was not a good initialization
@@ -298,7 +304,7 @@ function [X, stat] = cp_spm(T, varargin)
             % Solve for lambda
             D1alphaU = C*alphaU;
             D1alphaV = (alphaV * C)';
-            lambdak = 1/(alphaV*D1alphaU);
+            lambdak = norm(alphaU)*norm(alphaV)/(alphaV*D1alphaU);
 
             if k > 1
                 % Calculate the new matrix D and the new subspace
@@ -330,7 +336,7 @@ function [X, stat] = cp_spm(T, varargin)
 
             % Solve for lambda
             D1alpha = C*alpha;
-            lambdak = 1/(alpha'*D1alpha);
+            lambdak = norm(alpha)^2/(alpha'*D1alpha);
 
             if k > 1
                 % Calculate the new matrix D and the new subspace
@@ -444,4 +450,3 @@ A = A - (A*x)*x';
 A = A(:, 1:end-1);
 
 end
-

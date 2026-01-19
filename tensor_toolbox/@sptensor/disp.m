@@ -9,8 +9,6 @@ function disp(X,name)
 %
 %Tensor Toolbox for MATLAB: <a href="https://www.tensortoolbox.org">www.tensortoolbox.org</a>
 
-
-
 % Extract the number of nonzeros/values and number of dimensions
 nz = nnz(X);
 
@@ -18,18 +16,11 @@ if ~exist('name','var')
     name = 'ans';
 end
 
+fprintf('%s is a %s (%s) of size %s with %d values\n',...
+    name, class(X), X.type, tt_size2str(X.size), nz);
+
 if (nz == 0)
-    if issparse(X)
-        tmpstr = 'all-zero sparse tensor';
-    else
-        tmpstr = 'totally empty incomplete tensor';
-    end
-    fprintf('%s is an %s of size %s\n',...
-        name, tmpstr, tt_size2str(X.size));
-    return;
-else
-    fprintf('%s is a %s tensor of size %s with %d values\n',...
-        name, X.type, tt_size2str(X.size), nz);
+    return
 end
 
 % Stop insane printouts

@@ -1,5 +1,5 @@
-# Tensor Toolbox for MATLAB, Version 3.7
-October 1, 2025 (current release)         
+# Tensor Toolbox for MATLAB, Version 3.8
+December 7, 2025 (current release)         
 by Brett W. Bader, Tamara G. Kolda, Daniel M. Dunlavy, et al.        
 Sandia National Laboratories and MathSci.ai   
 
@@ -11,6 +11,13 @@ For instructions on contributing, see [CONTRIBUTION_GUIDE.md](CONTRIBUTION_GUIDE
 For all other information, including download and usage instructions, see [www.tensortoolbox.org](https://www.tensortoolbox.org/).
 
 Release notes follow below.
+
+## Changes in dev from Version 3.8
+
+## Changes in Version 3.8 from Version 3.7 (07-Dec-2025)
+- Updated [`cp_spm`](cp_spm.m) with the last version of the algorithm, published in Numerical Algorithms (Merge Request !95)
+- Updated [`disp.m`](@tensor/disp.m) for [`tensor`](@tensor/), [`sptensor`](@sptensor/), and [`ktensor`](@ktensor/) so that it works with derived classes and correctly displays the type.
+- Removed spurious datacheck in [`export_data.m`](export_data.m)
 
 ## Changes in Version 3.7 from Version 3.6 (28-Sep-2023)
 - Sparse tensor support for **Incomplete** tensors [`sptensor`](@sptensor/sptensor.m) by addition of a type flag. Includes additiona of 2 new functions: [`sptensor/isincomplete.m`](@sptensor/isincomplete.m) and [`sptensor/issparse.m`](@sptensor/issparse.m).  Can now compute also a censored norm (i.e., ignoring the missing entries).

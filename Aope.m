@@ -1,11 +1,17 @@
-%% this function calculates L(J)=A_1^*A_1(J)+A_2^*A_2(J)+A_3^*A_3(J)+gamma*A_4^*A_4(J)+2*lambda*A_5^*A_5(J)
-function X=Aope(Aparas,paras,J,gamma,lambda)
+%% this function calculates L(J)=A_1^*A_1(J)+A_2^*A_2(J)+A_3^*A_3(J)+gamma*A_4^*A_4(J)+2*mu*A_5^*A_5(J)
+function X=Aope_opt(Aparas,paras,J,gamma,mu,lambda)
     A=Aparas.A;
     C=Aparas.C;
     E=Aparas.E;
     G=Aparas.G;
     B2=Aparas.B2;
     B3=Aparas.B3;
+    % if isfield(Aparas, {'AS','P','Q'})
+    %     AS=Aparas.AS;
+    %     P=Aparas.P;
+    %     Q=Aparas.Q;
+    % end
+
     tildeU_1=Aparas.tildeU_1;
     tildeV_1=Aparas.tildeV_1;
     
@@ -33,7 +39,7 @@ function X=Aope(Aparas,paras,J,gamma,lambda)
     Ktemp_3=khatrirao(J2,tildeV_1);
     %K=E*Ktemp_1'*G+E*Ktemp_2'*B2+E*Ktemp_3'*B3;
     K=E*(Ktemp_1'*G+Ktemp_2'*B2+Ktemp_3'*B3);
-
+    
     Temp1=A*S1*C'+gamma*G*K'*E;
     Temp2=S3*C'+gamma*B3*K'*E;
     Temp3=S2*C'+gamma*B2*K'*E;
@@ -45,11 +51,26 @@ function X=Aope(Aparas,paras,J,gamma,lambda)
     for i=1:r
         tildeU_1_i=tildeU_1(:,i);
         tildeV_1_i=tildeV_1(:,i);
+
         X1(:,i)=kron(Ir,tildeV_1_i')*Temp1(:,i);
         X2(:,i)=kron(Im,tildeV_1_i')*Temp2(:,i);
         X3(:,i)=kron(tildeU_1_i',Ir)*Temp1(:,i);
         X4(:,i)=kron(tildeU_1_i',In)*Temp3(:,i);
     end    
 
-    X=[X1+2*lambda*J1;X2+2*lambda*J2;X3+2*lambda*J3;X4+2*lambda*J4];
+    % X=[X1+2*mu*J1;X2+2*mu*J2;X3+2*mu*J3;X4+2*mu*J4];
+    X=[X1+mu*J1;X2+mu*J2;X3+mu*J3;X4+mu*J4];
+
+    % if lambda
+
+    %     S11=S(1:m,1:m);
+    %     S12=S(1:m,m+1:m+n);
+    %     S21=S(m+1:m+n,1:m);
+    %     S22=S(m+1:m+n,m+1:m+n);
+
+    %     Temp=[P'*S11*P*J12+P'*S12*Q*J34;
+    %           Q'*S21*P*J12+Q'*S22*Q*J34];
+
+    %     X=X+Temp;      
+    % end    
 end    

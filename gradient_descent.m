@@ -14,14 +14,14 @@ function runhist = gradient_descent(U0,V0,MA,alpha,beta,epsilon)
     iter=0;
 
 
-    while (iter<150 && norm(gra(:))>epsilon)
-        kr=khatrirao(U,V);
-        fprintf("the rank of kr is %d\n", rank(kr));
+    while (iter<15000 && norm(gra(:))>epsilon)
+        % kr=khatrirao(U,V);
+        % fprintf("the rank of kr is %d\n", rank(kr));
         
         iter=iter+1;
         
         % backtracking
-        t=2;
+        t=1.25;
         % while(fun_val-fval(U-t*grad_U,V-t*grad_V,MA)<alpha*t*norm(grad)^2)
         %     t=beta*t;
         % end    
@@ -36,13 +36,13 @@ function runhist = gradient_descent(U0,V0,MA,alpha,beta,epsilon)
             % fun_val_cur=fval(U,V,MA);
             
             % fprintf("pre function value is %3.4f, current function value is %3.4f, t is %3.4f\n",fval(U_pre,V_pre,MA), fun_val_cur, t);
-            % fprintf("difference is %3.4f, tol is %3.4f\n",fval(U_pre,V_pre,MA)-fval(U,V,MA), alpha*t*norm(grad(:))^2);
+            fprintf("i=%d,difference is %3.4f, tol is %3.4f\n",i,fval(U_pre,V_pre,MA)-fval(U,V,MA), alpha*t*norm(gra(:))^2);
             % gn=gradient(U,V,MA);
             % fprintf("norm of the gradient is %3.4f\n",norm(gn(:)));
 
             if fval(U_pre,V_pre,MA)-fval(U,V,MA)>=alpha*t*norm(gra(:))^2
                 flag=true;
-                fprintf("backtracking stepsize selection successful, step length is %3.4f\n",t);
+                fprintf("i=%d,backtracking stepsize selection successful, step length is %3.4f\n",i,t);
                 break;
             end
 

@@ -13,22 +13,31 @@ function runhist = low_rank_app (U,V,W)
     r=2;
     paras.m=m;
     paras.n=n;
-    paras.p=p;
     paras.r=r;
-    paras.itmax=150;
-    rho=0.75;
-    paras.tol=1e-4;
+   
 
-    gamma=1;
+    vp_paras.gamma=0;
+    vp_paras.itmax=1500;
+    vp_paras.tol=1e-6; 
+    vp_paras.mu=0;
+
+    cg_paras.itmax=500;
+    cg_paras.tol=1e-6;
+    cg_paras.lambda=1;
 
     U = rand(m,r);
     V = rand(n,r);
 
-    runhist_vp = variable_projection_gamma(U,V,MA,rho,gamma,paras);
+    %runhist_vp = variable_projection_gamma(U,V,MA,vp_paras,cg_paras,paras);
+    %runhist_vp = hybrid(U,V,MA,vp_paras,cg_paras,paras);
+    runhist_vp = BFGS(U,V,MA,paras);
+    %runhist_vp = LM_method(U,V,MA,vp_paras,cg_paras,paras);
     %runhist_vp = variable_projection(MA, rho, paras,X);
-    %runhist_vp = LM_method(MA,rho,gamma,paras);
+    %runhist_vp = LM_method(U,V,MA,gamma,paras);
     Uhat = runhist_vp.U;
     Vhat = runhist_vp.V;
+    cput=runhist_vp.cput;
+    fprintf("variable_projection method costs %3.4f\n",cput);
 
     kr=khatrirao(Uhat,Vhat);
     krmp=pinv(kr); % the Moore-Penrose inverse of U\odot V

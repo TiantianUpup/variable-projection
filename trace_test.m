@@ -32,12 +32,21 @@
 % fprintf("res is %3.20f\n",norm(res1(:)));
 % fprintf("res is %3.20f\n",norm(res2(:)));
 
-for i=0:1
-   A=[i,i;
-      i,i];
+% for i=0:1
+%    A=[i,i;
+%       i,i];
 
-   B=[i+1,i+1;
-      i+1,i+1];
-   C=[A;B];   
-   fprintf("the norm of C is %3.8f\n",norm(C(:))^2);      
-end   
+%    B=[i+1,i+1;
+%       i+1,i+1];
+%    C=[A;B];   
+%    fprintf("the norm of C is %3.8f\n",norm(C(:))^2);      
+% end   
+
+A=[1,4;
+   2,5;
+   3,6];
+disp(A(:));  
+
+a=A(:);
+A=reshape(a,3,2);
+disp(A);

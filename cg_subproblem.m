@@ -1,23 +1,24 @@
-function runhist = cg_subproblem (Aparas, paras, B, gamma,lambda)
-    fprintf("gamma is %d\n",gamma);
+function runhist = cg_subproblem (Aparas,cg_paras,paras,B, gamma)
+    timect = cputime;
+
     % convergence condition
-    %itmax=paras.itmax;
-    itmax = 500;
-    %tol=paras.tol;
-    tol = 1e-6;
+    itmax=cg_paras.itmax;
+    tol=cg_paras.tol;
+    mu=cg_paras.mu;
+    lambda=cg_paras.lambda;
 
     % initialization
-    r = paras.r;
+    r=paras.r;
     m=paras.m;
     n=paras.n;
-    X = zeros(m+n, r); % direction D=[A;B];
+    X=zeros(m+n, r); % direction D=[A;B];
+    %X=X0;
     % calculation of R
     R = B;
 
     iter = 0;
     R_norm = norm(R(:));
 
-    fprintf("R norm is %3.4f\n",norm(R_norm(:)));
     while (iter < itmax && R_norm > tol)
         % step 1
         iter = iter + 1;
@@ -31,19 +32,20 @@ function runhist = cg_subproblem (Aparas, paras, B, gamma,lambda)
         end
 
         % Step 3
-        alpha = norm (R(:))^2 / trace(C' * Aope(Aparas, paras, C, gamma,lambda));
+        alpha = norm (R(:))^2 / trace(C' * Aope(Aparas, paras, C, gamma,mu,lambda));
 
         % Step 4
         X = X + alpha * C;
 
         % Step 5
         R_pre = R;
-        R = R - alpha * Aope(Aparas, paras, C, gamma,lambda);
+        R = R - alpha * Aope(Aparas, paras, C, gamma,mu,lambda);
 
         R_norm = norm(R(:));
     end
 
-    fprintf("cg method iter=%d, R_norm=%3.7f\n",iter,norm(R_norm(:)));
+    cput = cputime - timect;
+    fprintf("cg method iter=%d, R_norm=%3.7f, time cost is %3.4f\n",iter,norm(R_norm(:)),cput);
     runhist.R_norm = R_norm;
     runhist.X = X;
     runhist.iter = iter;

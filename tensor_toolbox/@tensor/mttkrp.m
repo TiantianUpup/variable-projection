@@ -13,7 +13,7 @@ function V = mttkrp(X,U,n,vers)
 %   into one of the factor matrices.
 %
 %   NOTE: Updated to use BSXFUN per work of Phan Anh Huy. See Anh Huy Phan,
-%   Petr Tichavský, Andrzej Cichocki, On Fast Computation of Gradients for
+%   Petr Tichavsk?, Andrzej Cichocki, On Fast Computation of Gradients for
 %   CANDECOMP/PARAFAC Algorithms, arXiv:1204.1586, 2012.
 %
 %   Examples
@@ -23,7 +23,6 @@ function V = mttkrp(X,U,n,vers)
 %   See also TENSOR, TENMAT, KHATRIRAO
 %
 %Tensor Toolbox for MATLAB: <a href="https://www.tensortoolbox.org">www.tensortoolbox.org</a>
-
 
 % Multiple versions supported...
 if ~exist('vers','var')

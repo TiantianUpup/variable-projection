@@ -6,11 +6,11 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>Subspace Power Method for CP Decomposition of Symmetric Tensors</title><meta name="generator" content="MATLAB 9.11"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2022-08-16"><meta name="DC.source" content="cp_spm_doc.m"><style type="text/css">
-html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+      --><title>Subspace Power Method for CP Decomposition of Symmetric Tensors</title><meta name="generator" content="MATLAB 9.14"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2025-10-08"><meta name="DC.source" content="cp_spm_doc.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:90%; margin-bottom:1px; }
-html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:12px; color:#000; line-height:140%; background:#fff none; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:12px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
 html body td { vertical-align:top; text-align:left; }
 
 h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:2.5em; color:#d55000; line-height:100%; font-weight:normal; }
@@ -54,6 +54,7 @@ span.comment { color:#228B22 }
 span.string { color:#A020F0 }
 span.untermstring { color:#B20000 }
 span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
 
 .footer { width:auto; padding:10px 0px; margin:20px 0px 0px; border-top:1px dotted #878787; font-size:0.9em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
 .footer p { margin:0px; padding:0px 20px; }
@@ -74,7 +75,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 &#62;&#62; <a href="cp.html">CP Decompositions</a>
 &#62;&#62; <a href="cp_spm_doc.html">CP-SPM</a>
 </p>
-</p><p>The function <tt>cp_spm</tt> computes the symmetric CP decomposition of a symmetric tensor using the Subspace Power Method (SPM). The symmetric CP decomposition is described in <a href="cp_sym_doc.html">Symmetric CP Decomposition</a>, while SPM is described in the following reference:</p><div><ul><li>J. Kileel, J. M. Pereira, Subspace power method for symmetric tensor   decomposition and generalized PCA,   <a href="https://arxiv.org/abs/1912.04007">arXiv:1912.04007</a>, 2020</li></ul></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Create a sample problem</a></li><li><a href="#3">Run CP-SPM</a></li><li><a href="#5">Compare with CP-SYM using L-BFGS from Poblano Toolbox</a></li></ul></div><h2 id="1">Create a sample problem</h2><p>For consistency, we use the same example as in <a href="cp_sym_doc.html">Symmetric CP Decomposition</a></p><pre class="codeinput">d = 3; <span class="comment">% order</span>
+</p><p>The function <tt>cp_spm</tt> computes the symmetric CP decomposition of a symmetric tensor using the Subspace Power Method (SPM). The symmetric CP decomposition is described in <a href="cp_sym_doc.html">Symmetric CP Decomposition</a>, while SPM is described in the following reference:</p><div><ul><li>J. Kileel, J. M. Pereira, Subspace power method for symmetric tensor   decomposition,   <a href="https://doi.org/10.1007/s11075-025-02165-y">Numerical Algorithms</a>,   2025. <a href="https://arxiv.org/abs/1912.04007">[preprint]</a></li></ul></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Create a sample problem</a></li><li><a href="#3">Run CP-SPM</a></li><li><a href="#5">Compare with CP-SYM using L-BFGS from Poblano Toolbox</a></li></ul></div><h2 id="1">Create a sample problem</h2><p>For consistency, we use the same example as in <a href="cp_sym_doc.html">Symmetric CP Decomposition</a></p><pre class="codeinput">d = 3; <span class="comment">% order</span>
 n = 10; <span class="comment">% size</span>
 r = 2; <span class="comment">% true rank</span>
 
@@ -105,9 +106,9 @@ fprintf(<span class="string">'\n'</span>);
 fprintf(<span class="string">'Final function value: %.2g\n'</span>, fg_explicit(S, X, norm(X)^2));
 fprintf(<span class="string">'Check similarity score (1=perfect): %.2f\n'</span>, score(S, S_true));
 fprintf(<span class="string">'\n'</span>);
-</pre><pre class="codeoutput">Elapsed time is 0.022587 seconds.
+</pre><pre class="codeoutput">Elapsed time is 0.017740 seconds.
 
-Final function value: 0.39
+Final function value: 0.38
 Check similarity score (1=perfect): 0.93
 
 </pre><h2 id="5">Compare with CP-SYM using L-BFGS from Poblano Toolbox</h2><p>We compare SPM with <tt>cp_sym</tt>. Its options are explained in <a href="cp_sym_doc.html">Symmetric CP Decomposition</a>; This is the recommended way to run the method:</p><pre class="codeinput">optparams = lbfgs(<span class="string">'defaults'</span>); <span class="comment">% Get the optimization parameters</span>
@@ -146,7 +147,7 @@ fprintf(<span class="string">'\n'</span>);
     17        42       0.36460180       0.00000387
     18        44       0.36460180       0.00000212
     19        46       0.36460180       0.00000117
-Elapsed time is 0.142301 seconds.
+Elapsed time is 0.061546 seconds.
 
 Final function value: 0.36
 Stopping condition: Relative change in F &lt; RelFuncTol
@@ -170,8 +171,9 @@ Check similarity score (1=perfect): 0.99
 % while SPM is described in the following reference:
 %
 % * J. Kileel, J. M. Pereira, Subspace power method for symmetric tensor
-%   decomposition and generalized PCA, 
-%   <https://arxiv.org/abs/1912.04007 arXiv:1912.04007>, 2020
+%   decomposition,  
+%   <https://doi.org/10.1007/s11075-025-02165-y  Numerical Algorithms>,
+%   2025. <https://arxiv.org/abs/1912.04007 [preprint]>
 
 %% Create a sample problem 
 % For consistency, we use the same example as in <cp_sym_doc.html Symmetric CP 

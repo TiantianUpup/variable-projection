@@ -35,6 +35,7 @@ Assuming that current release number is of the form `3.N-dev` in the `dev` branc
    - [ ] Under "How to Cite" (**includes exact release date**)
 * [ ] `README.md` 
    - [ ] First two lines (**includes exact release date**)
+   - [ ] Release notes section (**includes exact release date**)
 * [ ] `doc/html/helptoc.xml`
    - Change toc version
 * [ ] `maintenance/create_topcontents.m`

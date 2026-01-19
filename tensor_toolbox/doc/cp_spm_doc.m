@@ -14,8 +14,9 @@
 % while SPM is described in the following reference:
 %
 % * J. Kileel, J. M. Pereira, Subspace power method for symmetric tensor
-%   decomposition and generalized PCA, 
-%   <https://arxiv.org/abs/1912.04007 arXiv:1912.04007>, 2020
+%   decomposition,  
+%   <https://doi.org/10.1007/s11075-025-02165-y  Numerical Algorithms>,
+%   2025. <https://arxiv.org/abs/1912.04007 [preprint]>
 
 %% Create a sample problem 
 % For consistency, we use the same example as in <cp_sym_doc.html Symmetric CP 
