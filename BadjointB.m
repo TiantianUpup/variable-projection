@@ -1,14 +1,22 @@
 %% this function calculates C^*C(B)
-function X = BadjointB (tildeU_1, MMA, paras, C)
-    
+function X = BadjointB (Aparas,paras,J,gamma)
+    CCT=Aparas.CCT;
+    tildeV_1=Aparas.tildeV_1;
+
+    m=paras.m;
     n=paras.n;
     r=paras.r;
-    X = zeros(n-r,r);
-    I = eye(n-r);
-    MMAt = MMA'; % the transpose of the MMA
-    kr=khatrirao(tildeU_1,C);
+   
+    
+    J2=J;
+   
     for i=1:r
-        tildeU_1_i=tildeU_1(:,i);
-        X(:,i)=kron(tildeU_1_i',I)*kr*MMA*MMAt(:,i);
-    end 
+        CCi=CCT(:,i);
+        
+        tildeV_1_i=tildeV_1(:,i);
+        X(:,i)=J2*(CCi.*(tildeV_1'*tildeV_1_i));
+        
+    end    
+
+   
 end     

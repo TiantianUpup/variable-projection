@@ -1,27 +1,32 @@
 %% this function calculates A^*A(C)
-function X = AadjointA (tildeU_1,tildeV_1,MMA,WL,paras, C)                         
+function X = AadjointA (Aparas,paras,J,gamma)                         
+    W1=Aparas.W1;
+    CCT=Aparas.CCT;
+
+    tildeU_1=Aparas.tildeU_1;
+    tildeV_1=Aparas.tildeV_1;
+
+    m=paras.m;
+    n=paras.n;
     r=paras.r;
-    X = zeros(2*r,r);
+   
+    J1=J(1:r,1:r);
+    J3=J(r+1:2*r,1:r);
+
     X1=zeros(r,r);
-    X2=zeros(r,r);
-    I = eye(r);
-
-    % tildeU_1 = operator_paras.tildeU_1;
-    % tildeV_1 = operator_paras.tildeV_1;
-    % MMA = operator_paras.MMA;
-    % WL = operator_paras.WL; % WL: W*L
-
-    C1=C(1:r,1:r);
-    C2=C(r+1:2*r,1:r);
-
-    temp=WL*WL'*(khatrirao(tildeU_1,C2)+khatrirao(C1,tildeV_1))*(MMA*MMA');
+    X3=zeros(r,r);
+   
     for i=1:r
+        CCi=CCT(:,i);
         tildeU_1_i=tildeU_1(:,i);
         tildeV_1_i=tildeV_1(:,i);
-        X1(:,i)=kron(I,tildeV_1_i')*temp(:,i);
-        X2(:,i)=kron(tildeU_1_i',I)*temp(:,i);
-    end 
+        a = reshape(J3.*CCi'*tildeU_1'+tildeV_1.*CCi'*J1',[r*r,1]);
+        a_mat=reshape(a-W1*(W1'*a),[r,r]);
+        
+        X1(:,i)=a_mat'*tildeV_1_i;  
+        X3(:,i)=a_mat*tildeU_1_i;
+    end    
 
-    X(1:r,1:r)=X1;
-    X(r+1:2*r,1:r)=X2;
+    %X_opt=[X1;X2;X3;X4];  
+    X=[X1;X3];   
 end     

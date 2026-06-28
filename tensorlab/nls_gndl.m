@@ -417,6 +417,7 @@ while ~output.info
     
     % Dogleg trust region.
     if isnan(output.delta(end)), output.delta(end) = max(1,normpgn); end
+
     while rho <= 0
 
         % Compute the dogleg step p.

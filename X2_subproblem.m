@@ -1,65 +1,48 @@
 function runhist = X2_subproblem (Aparas, B, paras)
-    % parameters of the operator A
-    tildeV_1 = Aparas.tildeV_1;
-    M = Aparas.M;
-    MA = Aparas.MA;
-    MMA = M*MA;
-
-    % convergence condition
-    %itmax=paras.itmax;
-    itmax=150;
-    %tol=paras.tol;
-    tol=1e-4;
+    gamma=0;
 
     % parameter dimension
     m=paras.m;
     r=paras.r;
 
     % initialization
-    X = zeros(m-r,r);
-    % calculation of R
-    R = zeros(m-r,r);
-    I = eye(m-r);
-    BM = B*MMA';
-   
-    for i=1:r
-        tildeV_1_i=tildeV_1(:,i);
-        R(:,i)=kron(I,tildeV_1_i')*BM(:,i);
-    end 
+    X2 = zeros(m-r,r);
+    R=B;
 
     iter = 0;
     R_norm = norm(R(:));
-   
-    
+
+    itmax=500;
+    tol=1e-6;
     while (iter < itmax && R_norm>tol)
-        %fprintf("X2_subproblem R norm is %3.4f\n", R_norm);
+        %fprintf("Y2_subproblem R norm is %3.4f\n", R_norm);
         % step 1
         iter = iter + 1;
-       
+
         % step 2
         if iter == 1
             C = R;
         else
-            beta = (norm(R(:))^2)/(norm(R_pre(:))^2);
+            beta = norm(R(:))^2/norm(R_pre(:))^2;
             C=R+beta*C;
         end
 
         % Step 3
-        alpha = norm (R(:))^2 / trace(C'*CadjointC(tildeV_1, MMA, paras,C));
+        alpha = norm(R(:))^2 / trace(C'*BadjointB(Aparas, paras, C,gamma));
 
         % Step 4
-        X = X + alpha * C;
+        X2 = X2 + alpha * C;
 
         % Step 5
         R_pre=R;
-        R = R - alpha*CadjointC(tildeV_1, MMA, paras,C);
+        R = R - alpha*BadjointB(Aparas, paras, C,gamma);
 
         R_norm=norm(R(:));
     end
 
-    %fprintf("X2_subproblem iter=%d,R norm is %3.12f\n",iter,R_norm);
-
+    %fprintf("Y2_subproblem iter=%d, R_norm is %3.12f\n",iter, R_norm);
     runhist.R_norm=R_norm;
-    runhist.X2=X;
+    runhist.X2=X2;
     runhist.iter=iter;
-end
+    %fprintf("------------------ X2_subproblem iter=%d ---------------------------\n",iter);
+end    

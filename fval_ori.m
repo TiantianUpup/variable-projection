@@ -1,5 +1,5 @@
 % this function calculates the value of the objective function
-function eqs = fval(U,V,MA)
+function eqs = fval_ori(U,V,MA)
     %P=proj_supp(U,V);
     A=khatrirao(U,V);
     P=proj_supp(A);

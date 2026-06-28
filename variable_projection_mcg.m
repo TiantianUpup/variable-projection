@@ -20,7 +20,7 @@ function runhist = variable_projection_mcg(U0,V0,MA,vp_paras,cg_paras,paras)
     fval_pre=fval_opt(PMA);
     fval_init=fval_pre;
 
-    fprintf("variable_projection_pcg method, the initial objective value fval is %3.4f\n",fval(U,V,MA));
+    fprintf("variable_projection_mcg method, the initial objective value fval is %3.4f\n",fval(U,V,MA));
 
     iter = 0; 
     %itmax = paras.itmax;

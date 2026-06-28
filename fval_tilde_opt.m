@@ -1,15 +1,15 @@
-function eqs = fval_tilde_opt(WTW,P1,Q1,U,V,W1)
-    fprintf("-------------- this is fval_tilde_opt method -------------------\n");
+function eqs = fval_tilde_opt(WTW,P1TU,Q1TV,W1)
+    % fprintf("-------------- this is fval_tilde_opt method -------------------\n");
     [k,~]=size(WTW);
-    [~,r]=size(P1);
+    [~,r]=size(W1);
     W=cell(r);
 
-    for i=1:r
-        % wi is the i-th column of W
-        wi=W1(:,i);
-        w_mat=reshape(wi,[r,r]);
-        W{i}=w_mat;
-    end
+    % for i=1:r
+    %     % wi is the i-th column of W
+    %     wi=W1(:,i);
+    %     w_mat=reshape(wi,[r,r]);
+    %     W{i}=w_mat;
+    % end
 
     N=zeros(r,k);
 
@@ -30,13 +30,18 @@ function eqs = fval_tilde_opt(WTW,P1,Q1,U,V,W1)
     % N2=zeros(r,k);
     % fprintf("------------------ method 2 --------------------\n");
     % tic
+    % P1TU,Q1TV
     for i=1:r
         wi=W1(:,i);
+        
         W{i}=reshape(wi,[r,r]);
         for j=1:k
-            vj=V(:,j);
-            uj=U(:,j);
-            N(i,j)=(vj'*Q1)*W{i}*(P1'*uj);
+            P1TUj=P1TU(:,j);
+            Q1TVj=Q1TV(:,j);
+            % vj=V(:,j);
+            % uj=U(:,j);
+            % N(i,j)=(vj'*Q1)*W{i}*(P1'*uj);
+            N(i,j)=Q1TVj'*W{i}*P1TUj;
         end    
     end
     % toc

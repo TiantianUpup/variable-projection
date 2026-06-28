@@ -1,13 +1,19 @@
 %% this function calculates C^*C(B)
-function X = CadjointC (tildeV_1, MMA, paras, C)
+function X = CadjointC (Aparas,paras,J,gamma)
+    CCT=Aparas.CCT;
+
+    tildeU_1=Aparas.tildeU_1;
+
     m=paras.m;
+    n=paras.n;
     r=paras.r;
-    X = zeros(m-r,r);
-    I = eye(m-r);
-    MMAt = MMA'; % the transpose of the MMA
-    kr=khatrirao(C,tildeV_1);
+   
+    J4=J;
+
     for i=1:r
-        tildeV_1_i=tildeV_1(:,i);
-        X(:,i)=kron(I,tildeV_1_i')*kr*MMA*MMAt(:,i);
-    end 
+        CCi=CCT(:,i);
+        tildeU_1_i=tildeU_1(:,i);
+     
+        X(:,i)=J4*(CCi.*(tildeU_1'*tildeU_1_i)); 
+    end    
 end    

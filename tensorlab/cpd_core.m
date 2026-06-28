@@ -20,6 +20,8 @@ function [U,output] = cpd_core(T,U0,varargin)
 
 unstructuredtypes = {'full', 'incomplete', 'sparse'};
 type = getstructure(T);
+fprintf("--------------------------- type is ------------------\n");
+disp(type);
 isstructured = ~any(strcmpi(type, unstructuredtypes));
 if ~isstructured, 
     T = fmt(T,true); 
@@ -151,8 +153,8 @@ if strcmpi(options.OptimizationType, 'nls')
     dF.JHF = @grad;
     if isnan(options.M), options.M = 'block-Jacobi'; end
     switch options.M
-      case 'block-SSOR', dF.M = @M_blockSSOR;
-      case 'block-Jacobi', dF.M = @M_blockJacobi;
+      case 'block-SSOR', dF.M = @M_blockSSOR;   
+      case 'block-Jacobi', dF.M = @M_blockJacobi; 
       case 'Jacobi', dF.M = @M_Jacobi;
       otherwise, if isa(options.M,'function_handle'), dF.M = options.M; end
     end

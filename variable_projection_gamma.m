@@ -3,6 +3,7 @@ function runhist = variable_projection_gamma(U0,V0,U_true,V_true,W_true,MA,vp_pa
     m = paras.m;
     n = paras.n;
     r = paras.r;
+    [p,~]=size(W_true);
 
     % U_0 and V_0
     U = U0;
@@ -74,9 +75,25 @@ function runhist = variable_projection_gamma(U0,V0,U_true,V_true,W_true,MA,vp_pa
         %fprintf("the rank of the UVkr is %d\n",rank(UVkr));
       
         % calculate \overline{M(A)}
+        % Method 1
+        tic
         kro = kron(P, Q);
         MA = kro' * MA_temp;
+        toc
+        % Method 2
+        tic
+        MA_opt=zeros(n*m,p);
+        QTV=Q'*V_true;
+        UTP=U_true'*P;
+        for i=1:p
+            MA_opt(:,i)=reshape(QTV*diag(W_true(i,:))*UTP,[n*m,1]);
+        end    
+        toc
+        MA_res=MA-MA_opt;
+        fprintf("----------- the residual of MA is %3.40f ------------------------\n",norm(MA_res(:)));
+
         
+
         
         % calculate M
         HWJ = H1 * W * J;
@@ -167,9 +184,9 @@ function runhist = variable_projection_gamma(U0,V0,U_true,V_true,W_true,MA,vp_pa
 
        %% check whether [A;B] is the descent direction
         dir=[A;B];
-        % gra_gra_inner=-norm(gra(:))^2;
-        % gra_direction_inner=trace(gra'*dir);
-        % fprintf("========================= gra_direction_inner is %3.10f, gra_gra_inner is %3.10f\n",gra_direction_inner,gra_gra_inner);
+        gra_gra_inner=-norm(gra(:))^2;
+        gra_direction_inner=trace(gra'*dir);
+        fprintf("========================= gra_direction_inner is %3.10f, gra_gra_inner is %3.10f\n",gra_direction_inner,gra_gra_inner);
     
      
         % if norm(dir(:))<epsilon

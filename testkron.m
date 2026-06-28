@@ -169,16 +169,146 @@ m=100; n=150; r=35;
 % res=result_1-result_2;
 % fprintf("the residual is %3.80f\n",norm(res(:)));
 
-r=3;
-W=cell(r);
+% r=3;
+% W=cell(r);
 
-for i=1:r
-    W{i}=i*ones(r);
-end    
+% for i=1:r
+%     W{i}=i*ones(r);
+% end    
 
-fprintf("--------------------- W{1} is ------------------------\n");
-disp(W{1});
-fprintf("--------------------- W{2} is ------------------------\n");
-disp(W{2});
-fprintf("--------------------- W{3} is ------------------------\n");
-disp(W{3});
+% fprintf("--------------------- W{1} is ------------------------\n");
+% disp(W{1});
+% fprintf("--------------------- W{2} is ------------------------\n");
+% disp(W{2});
+% fprintf("--------------------- W{3} is ------------------------\n");
+% disp(W{3});
+
+% W=[1,2;
+%    3,4;
+%    5,6];
+% disp(W(1,:));
+% disp(W(2,:));
+% disp(W(3,:));  
+
+% m=3;
+% n=4;
+% r=2;
+% X=rand(m,r);
+% Y=rand(n,r);
+% v=rand(r,1);
+
+% result_1=khatrirao(X,Y)*v;
+% Temp=Y*diag(v)*X';
+% result_2=Temp(:);
+% disp(result_1);
+% disp(result_2);
+
+% m=3;
+% r=4;
+% s=2;
+% t=4;
+% X=rand(m,r);
+% Y=rand(r,s);
+% A=rand(n,t);
+% B=rand(t,s);
+
+% result_1=khatrirao(X*Y,A*B);
+% result_2=kron(X,A)*khatrirao(Y,B);
+% res=result_1-result_2;
+% fprintf("------------------- the residual is ------------------%3.20f\n",norm(res(:)));
+
+% x=0|5;
+% disp(mod(1,5));
+% disp(1|5);
+% disp(2|5);
+% disp(3|5);
+% disp(4|5);
+% disp(5|5);
+% disp(6|5);
+% r=5;
+% v=rand(r,1);
+% R=zeros(r,r);
+% A1=rand(r,r);
+% A2=rand(r,r);
+% A3=rand(r,r);
+% A4=rand(r,r);
+% A5=rand(r,r);
+% A=[A1;A2;A3;A4;A5];
+% I=eye(r);
+% result_1=kron(I,v)*A;
+% % for i=1:r
+% %     R(i,1:end)=;
+% % end
+% Arow=[A1,A2,A3,A4,A5];
+% R_temp=v'*Arow;
+% result_2=reshape(R_temp,[r,r]);
+% res=result_1-result_2;
+% fprintf("the residual is %3.4f\n",res);
+
+
+% A=[1,2;
+%    3,4];
+% a=diag(A);   
+% disp(a);
+
+% disp(sum(A,1));
+
+% m=4;
+% n=3;
+% P=rand(m,m);
+% Q=rand(n,n);
+% u=rand(m,1);
+% v=rand(n,1);
+% alpha=rand(m*n,1);
+% uTP=u'*P;
+% vTQ=v'*Q;
+% res_1=kron(uTP,vTQ)*alpha;
+% res_2=vTQ*reshape(alpha,[n,m])*uTP';
+% res=res_1-res_2;
+% fprintf("----------- the residual of result is %3.20f ----------------\n",res);
+
+% m=30;
+% n=40;
+% r=2;
+% X=rand(n,r);
+% Y=rand(m,r);
+% M=rand(n,m);
+
+% res_1=zeros(r,1);
+% tic
+% for i=1:r
+%    Xi=X(:,i);
+%    Yi=Y(:,i);
+%    res_1(i)=Xi'*M*Yi;
+% end   
+% toc
+
+% tic
+% res_2= sum((X' * M) .* Y', 2);
+% toc
+
+% res=res_1-res_2;
+
+% fprintf("------------------- the residual is %3.20f ---------------\n",norm(res));
+
+
+% A=[
+%    1,2,3;
+%    -0.1,-0.2,1;
+%    0,1,1;
+% ];
+% count = sum(all(A >= 0, 2));
+% fprintf("-------- count is %3.2f ----------\n", count);
+% fprintf("the max nonnegative entry of A=%3.4f\n",max(A(A >= 0)));
+
+% a=[1,2,3,4];
+% b=[4,3,2,1];
+% disp(khatrirao(a,b));
+
+% a=[1,2,3,4,5,6,7,8,9];
+% A=reshape(a,[3,3]);
+% disp(A');
+
+a=3.1234567;
+b=round(a,2);
+disp(b);

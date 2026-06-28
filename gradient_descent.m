@@ -13,8 +13,13 @@ function runhist = gradient_descent(U0,V0,MA,alpha,beta,epsilon)
     fprintf("initial objective function value is %3.4f\n",fun_val);
     iter=0;
 
+    X=[U;V];
+    grad_norm=norm(gra(:));
+    %fprintf("=========================== grad_norm is %3.10f =========================\n",grad_norm);
+    rel_grad=grad_norm/max(1,norm(X(:)));
 
-    while (iter<15000 && norm(gra(:))>epsilon)
+
+    while (iter<150 && rel_grad>epsilon)
         % kr=khatrirao(U,V);
         % fprintf("the rank of kr is %d\n", rank(kr));
         
@@ -36,13 +41,13 @@ function runhist = gradient_descent(U0,V0,MA,alpha,beta,epsilon)
             % fun_val_cur=fval(U,V,MA);
             
             % fprintf("pre function value is %3.4f, current function value is %3.4f, t is %3.4f\n",fval(U_pre,V_pre,MA), fun_val_cur, t);
-            fprintf("i=%d,difference is %3.4f, tol is %3.4f\n",i,fval(U_pre,V_pre,MA)-fval(U,V,MA), alpha*t*norm(gra(:))^2);
+            %fprintf("i=%d,difference is %3.4f, tol is %3.4f\n",i,fval(U_pre,V_pre,MA)-fval(U,V,MA), alpha*t*norm(gra(:))^2);
             % gn=gradient(U,V,MA);
             % fprintf("norm of the gradient is %3.4f\n",norm(gn(:)));
 
             if fval(U_pre,V_pre,MA)-fval(U,V,MA)>=alpha*t*norm(gra(:))^2
                 flag=true;
-                fprintf("i=%d,backtracking stepsize selection successful, step length is %3.4f\n",i,t);
+                %fprintf("i=%d,backtracking stepsize selection successful, step length is %3.4f\n",i,t);
                 break;
             end
 
@@ -85,7 +90,12 @@ function runhist = gradient_descent(U0,V0,MA,alpha,beta,epsilon)
         % Xhat=generate_cp_tensor(U,V,What);
         % res=X-Xhat;
 
-        fprintf("iter_number=%d,norm_grad=%3.5f,fun_val=%3.5f\n",iter,norm(gra(:)),fun_val);
+        X=[U;V];
+        grad_norm=norm(gra(:));
+        %fprintf("=========================== grad_norm is %3.10f =========================\n",grad_norm);
+        rel_grad=grad_norm/max(1,norm(X(:)));
+
+        %fprintf("iter_number=%d,norm_grad=%3.5f,fun_val=%3.5f,rel_grad=%3.10f\n",iter,norm(gra(:)),fun_val,rel_grad);
     end  
     
     runhist.iter=iter;

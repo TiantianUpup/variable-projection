@@ -5,20 +5,26 @@ function X = generate_cp_tensor(U, V, W)
     
     X = zeros(m, n, p);
     
+    % for i = 1:r
+    %     u = U(:, i);
+    %     v = V(:, i);
+    %     w = W(:, i);
+        
+    %     rank1_tensor = zeros(m, n, p);
+    %     for a = 1:m
+    %         for b = 1:n
+    %             for c = 1:p
+    %                 rank1_tensor(a, b, c) = u(a) * v(b) * w(c);
+    %             end
+    %         end
+    %     end
+        
+    %     X = X + rank1_tensor;
+    % end
     for i = 1:r
         u = U(:, i);
         v = V(:, i);
         w = W(:, i);
-        
-        rank1_tensor = zeros(m, n, p);
-        for a = 1:m
-            for b = 1:n
-                for c = 1:p
-                    rank1_tensor(a, b, c) = u(a) * v(b) * w(c);
-                end
-            end
-        end
-        
-        X = X + rank1_tensor;
+        X=X+reshape(kron(kron(w,v),u),[m,n,p]);
     end
 end
