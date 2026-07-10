@@ -111,8 +111,8 @@ for i=1:trial
 
 
     %%%%%%%%%%% test data
-    r=10;
-    paras.m=m; 
+    r=5;
+    paras.m=m;
     paras.n=n;   
     paras.r=r;
 
@@ -319,15 +319,15 @@ fprintf("rho is %d\n",rho);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% plot
 fig=figure();
-semilogy(fval_cpd_als,'-o', 'LineWidth', 1.5); hold all; %'g--s',
-semilogy(fval_als,'-*', 'LineWidth', 1.5); hold all; % 'g--s',
-semilogy(fval_cpd_nls, '-square','LineWidth', 1.5); hold all; % 'b-*',
-semilogy(fval_vp, '-x','LineWidth', 1.5); 
+% semilogy(fval_cpd_als,'-o', 'LineWidth', 1.5); hold all; %'g--s',
+% semilogy(fval_als,'-*', 'LineWidth', 1.5); hold all; % 'g--s',
+% semilogy(fval_cpd_nls, '-square','LineWidth', 1.5); hold all; % 'b-*',
+% semilogy(fval_vp, '-x','LineWidth', 1.5); 
 
-% plot(fval_cpd_als,'-o', 'LineWidth', 1.5); hold all; %'g--s',
-% plot(fval_als,'-*', 'LineWidth', 1.5); hold all; % 'g--s',
-% plot(fval_cpd_nls, '-square','LineWidth', 1.5); hold all; % 'b-*',
-% plot(fval_vp, '-x','LineWidth', 1.5); 
+plot(log10(fval_cpd_als),'-o', 'LineWidth', 1.5); hold all; %'g--s',
+plot(log10(fval_als),'-*', 'LineWidth', 1.5); hold all; % 'g--s',
+plot(log10(fval_cpd_nls), '-square','LineWidth', 1.5); hold all; % 'b-*',
+plot(log10(fval_vp), '-x','LineWidth', 1.5); 
 
 % semilogy(fval_vp); hold all;
 % semilogy(fval_cpd_als); hold all;
@@ -344,8 +344,8 @@ set(gca,'FontSize',13,'FontWeight','bold');
 x_range = xlim;
 xlim([-15, x_range(2)]);
 
-% y_range = ylim;
-% ylim([-10, y_range(2)]);
+y_range = ylim;
+ylim([-5, y_range(2)]);
 %%xticks(0:50:max_iter);
 legend('cpd\_als','cp\_als','cpd\_nls','vp\_pGN','FontSize', 15,'FontWeight', 'bold');  % 
 hold off;
