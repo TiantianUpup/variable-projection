@@ -1,4 +1,4 @@
-function runhist = Y2_subproblem (Aparas, B, paras)
+function runhist = Y2_subproblem (Aparas, B, cg_paras, paras)
     n=paras.n;
     r=paras.r;
     X = zeros(n-r,r);
@@ -8,8 +8,8 @@ function runhist = Y2_subproblem (Aparas, B, paras)
     iter = 0;
     R_norm = norm(R(:));
    
-    itmax=500;
-    tol=1e-6;
+    itmax=cg_paras.itmax;
+    tol=cg_paras.tol;
     while (iter < itmax && R_norm>tol)
         %fprintf("X2_subproblem R norm is %3.4f\n", R_norm);
         % step 1

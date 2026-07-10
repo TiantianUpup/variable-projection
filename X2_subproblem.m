@@ -1,4 +1,4 @@
-function runhist = X2_subproblem (Aparas, B, paras)
+function runhist = X2_subproblem (Aparas, B, cg_paras, paras)
     gamma=0;
 
     % parameter dimension
@@ -12,8 +12,8 @@ function runhist = X2_subproblem (Aparas, B, paras)
     iter = 0;
     R_norm = norm(R(:));
 
-    itmax=500;
-    tol=1e-6;
+    itmax=cg_paras.itmax;
+    tol=cg_paras.tol;
     while (iter < itmax && R_norm>tol)
         %fprintf("Y2_subproblem R norm is %3.4f\n", R_norm);
         % step 1

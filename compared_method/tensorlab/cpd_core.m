@@ -20,8 +20,6 @@ function [U,output] = cpd_core(T,U0,varargin)
 
 unstructuredtypes = {'full', 'incomplete', 'sparse'};
 type = getstructure(T);
-fprintf("--------------------------- type is ------------------\n");
-disp(type);
 isstructured = ~any(strcmpi(type, unstructuredtypes));
 if ~isstructured, 
     T = fmt(T,true); 
