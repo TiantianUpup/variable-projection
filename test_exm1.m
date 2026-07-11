@@ -8,6 +8,7 @@ root = fileparts(mfilename('fullpath'));
 addpath(genpath(fullfile(root, 'tensor_toolbox')));
 addpath(genpath(fullfile(root, 'tensorlab')));
 addpath(genpath(fullfile(root, 'utils')));
+addpath(genpath(fullfile(root, 'algo')));
 
 % case 1
 m=100;
