@@ -1,13 +1,11 @@
 %% this function calculates A^*A(C)
-function X = AadjointA (Aparas,paras,J,gamma)                         
+function X = AadjointA (Aparas,paras,J)                         
     W1=Aparas.W1;
     CCT=Aparas.CCT;
 
     tildeU_1=Aparas.tildeU_1;
     tildeV_1=Aparas.tildeV_1;
 
-    m=paras.m;
-    n=paras.n;
     r=paras.r;
    
     J1=J(1:r,1:r);

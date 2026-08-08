@@ -1,20 +1,10 @@
-clc; clear all; close all
 
-% addpath('compared_method');
-% addpath('utils');
-% addpath('algo');
-% addpath(fullfile(fileparts(mfilename('fullpath')), 'utils'));
-% addpath(fullfile(fileparts(mfilename('fullpath')), 'compared_method\tensorlab'));
-% addpath(fullfile(fileparts(mfilename('fullpath')), 'compared_method\tensor_toolbox'));
-% addpath(fullfile(fileparts(mfilename('fullpath')), 'algo'));
 
-addpath(fullfile('compared_method'));
-addpath(fullfile('utils'))
-addpath(fullfile('algo'))
-
-% m=10;
-% n=10;
-% p=100;
+%function test_exm1(m,n,p,r)
+clc; clear all; close all;
+addpath('../compared_method');
+addpath('../utils');
+addpath('../algo');
 
 
 trial=10;
@@ -48,56 +38,30 @@ Rel_err=zeros(10,4);
 Time=zeros(10,4);
 count=1;
 
+m=100;
+n=100;
+p=100;
 
 for r=1:15
 for i=1:trial
-    density=0.90;
+    % truth factor matrices
     r_true=15;
-
-    m=50;
-    n=50;
-    p=50;
-
-    % m=2; 
-    % n=3;
-    % p=3;
-
-    % r=15;
-    % U_true=full(sprand(m,r,density));
-    % V_true=full(sprand(n,r,density));
-    % W_true=full(sprand(p,r,density));
-    %V_true=rand(n,r);
-    %W_true=rand(p,r);
-
     U_true=rand(m,r_true);
     V_true=rand(n,r_true);
     W_true=rand(p,r_true);
-
-    rho = 0.3; % missing rate
-    Mask = rand(size(W_true)) > rho;
-    W_noise = W_true .* Mask;
-
-    T={U_true,V_true,W_noise};
+    T={U_true,V_true,W_true};
 
     X=generate_cp_tensor(U_true,V_true,W_true);
 
-    X_noise=generate_cp_tensor(U_true,V_true,W_noise);
 
     % %%%%%%%%%%% test data
-    % r=13;
+    % r=12;
     % paras.m=m; 
     % paras.n=n;   
     % paras.r=r; 
 
     % U = orth(rand(m,r));
     % V = orth(rand(n,r));
-
-    % [Uinit_gevd,output] = cpd_gevd(X,r);
-    % %fprintf("--------------------------- cpd_gevd costs %3.10f ----------------------------\n",cputime-cput_gevd);
-
-    % U=Uinit_gevd{1};
-    % V=Uinit_gevd{2};
-    % W=Uinit_gevd{3};
 
     % initial point
     U = rand(m,r);
@@ -127,6 +91,14 @@ for i=1:trial
     cg_paras.itmax=500;
     cg_paras.tol=1e-6;
 
+    % options_vp = struct;
+    % options_vp.NLS.xtol = 1e-6; 
+    % options_vp.NLS.ftol = 1e-12;
+    % options_vp.NLS.itmax = 1500;
+
+    % options_vp.CG.itmax = 500;
+    % options_vp.CG.tol = 1e-6;
+
     runhist_vp_0 = vp_pGN(T, Uinit, vp_paras, cg_paras);
     Uhat_1 = runhist_vp_0.U;
     Vhat_1 = runhist_vp_0.V;
@@ -146,11 +118,11 @@ for i=1:trial
 
     %%%%%%%%%%%%%%%%%%%%%%%%% cp_als method
     timect = cputime;
-    [P,U0,out] = cp_als(tensor(X_noise),r,...
+    [P,U0,out] = cp_als(tensor(X),r,...
         'printitn',0 , ...
         'init', Uinit, ...
         'maxiters', 1500, ...
-        'tol', 1e-6);
+        'tol', 1e-8);
 
     cput_als = cputime - timect;   
     als_res=full(P)-X;
@@ -166,9 +138,10 @@ for i=1:trial
     %%%%%%%%%%%%%%%%%%%%%%%%% cpd_als method
     options_als = struct;
     options_als.Algorithm = @cpd_als;
-    options_als.AlgorithmOptions.MaxIter = 1500;      
+    options_als.AlgorithmOptions.MaxIter = 1500;     
+    options_als.AlgorithmOptions.TolFun = 1e-12; 
     timect = cputime;
-    [Xhat,out_cpd_als]=cpd(X_noise,Uinit,options_als);
+    [Xhat,out_cpd_als]=cpd(X,Uinit,options_als);
     cput_cpd_als = cputime - timect;
     lab_res=X-cpdgen(Xhat);
     fval_cpd_als=out_cpd_als.Algorithm.fval;
@@ -185,10 +158,11 @@ for i=1:trial
     options_nls.Compression = false;
     options_nls.Algorithm = @cpd_nls;
     options_nls.AlgorithmOptions.MaxIter = 1500;      
-    options_nls.AlgorithmOptions.CGMaxIter = 500;      
+    options_nls.AlgorithmOptions.CGMaxIter = 500;     
+%     options_nls.AlgorithmOptions.CGTol = 1e-12;    
     timect_rnd = cputime;
     
-    [Uhat,out_cpd_nls]=cpd(X_noise,Uinit,options_nls);
+    [Uhat,out_cpd_nls]=cpd(X,Uinit,options_nls);
     cput_cpd_nls = cputime - timect_rnd;
     lab_res_rand=X-cpdgen(Uhat);
     fval_cpd_nls=out_cpd_nls.Algorithm.fval;
@@ -210,13 +184,9 @@ for i=1:trial
     % fprintf("iter=%d, cput=%3.4f, the residual of the cpd_nls method is %3.10f, res_err is %3.10f\n",iter_cpd_nls,cput_cpd_nls,norm(lab_res_rand(:)),norm(lab_res_rand(:))/norm(X(:)));
 end
 
-fprintf("========================================== rank %d approximation ==========================================\n",r);
+%fprintf("========================================== rank %d approximation ==========================================\n",r);
 fprintf("%d &%3.1f &%.4f &%3.2f &%3.1f &%.4f &%3.2f &%3.1f &%.4f &%3.2f &%3.1f &%.4f &%3.2f\n",r,mean(iter_cp_als_result),mean(rel_error_cp_als_result),mean(cput_cp_als_result),mean(iter_cpd_als_result),mean(rel_error_cpd_als_result),mean(cput_cpd_als_result),mean(iter_cpd_nls_result),mean(rel_error_cpd_nls_result),mean(cput_cpd_nls_result), mean(iter_vp_result),mean(rel_error_vp_result),mean(cput_vp_result));
 end
-
-% fprintf("========================================== rank %d approximation ==========================================\n",r);
-% fprintf("%d &%3.1f &%.4f &%3.2f &%3.1f &%.4f &%3.2f &%3.1f &%.4f &%3.2f &%3.1f &%.4f &%3.2f\n",r,mean(iter_cp_als_result),mean(rel_error_cp_als_result),mean(cput_cp_als_result),mean(iter_cpd_als_result),mean(rel_error_cpd_als_result),mean(cput_cpd_als_result),mean(iter_cpd_nls_result),mean(rel_error_cpd_nls_result),mean(cput_cpd_nls_result), mean(iter_vp_result),mean(rel_error_vp_result),mean(cput_vp_result));
-
 
 % fprintf("relative error of cp_als=%.4f, cpd_als=%.4f, cpd_nls=%.4f,vp=%.4f\n",mean(rel_error_cp_als_result),mean(rel_error_cpd_als_result),mean(rel_error_cpd_nls_result),mean(rel_error_vp_result));
 % fprintf("mean value of residul value of cp_als=%.4f, cpd_als=%.4f, cpd_nls=%.4f,vp=%.4f\n",mean(res_cp_als_result),mean(res_cpd_als_result),mean(res_cpd_nls_result),mean(res_vp_result));
@@ -238,13 +208,16 @@ end
 % disp("Rel_err matrix is:");
 % disp(Rel_err);
 
-% formatSpec = '%.4f %.4f %.4f %.4f\n';
-% r_id = fopen('rel_err.txt', 'w');
-% t_id = fopen('time.txt', 'w');
-% fprintf(r_id, formatSpec, Rel_err');
-% fprintf(t_id, formatSpec, Time');
+formatSpec = '%.4f %.4f %.4f %.4f\n';
+r_id = fopen('rel_err.txt', 'w');
+t_id = fopen('time.txt', 'w');
+fprintf(r_id, formatSpec, Rel_err');
+fprintf(t_id, formatSpec, Time');
 
-% fclose(r_id); 
-% fclose(t_id); 
+fclose(r_id); 
+fclose(t_id); 
 % disp("Time matrix is:");
 % disp(Time);
+
+%end
+ 

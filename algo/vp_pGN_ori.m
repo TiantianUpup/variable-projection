@@ -1,39 +1,9 @@
-function runhist = vp_pGN(T, Uinit, vp_paras, cg_paras)
-    % This function solves the following optimization:
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
-    %    \min \frac{1}{2}\|(U\odot V)W^{}-M(\mathcal{A})\|^2    %
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    % 
-    % Input
-    % ===========================================================
-    % T ...................... the factor matrices of the truth tensor
-    % Uinit .................. the factor matrices of the initial
-    % vp_paras ............... the parameters of the variable projection 
-    % cg_paras ............... the parameters of the conjugate gradient method 
-    % 
-    % Output
-    % ===========================================================
-    % runhist.U ............. the output of the factor matrix U
-    % runhist.V ............. the output of the factor matrix V
-    % runhist.W ............. the output of the factor matrix W
-    % runhist.fval .......... the output of the running history of the objective function value
-    % runhist.iter .......... the output of the iterations
-    % runhist.cput .......... the output of the running time 
-    %                            
-
-    %addpath('/compared_method/tensorlab');
-
+function runhist = vp_pGN_ori(U0,V0,U_true,V_true,W_true,vp_paras,cg_paras)
+                            
     timect = cputime;
-    
-    U_true=T{1};
-    V_true=T{2};
-    W_true=T{3};
-
-    U0=Uinit{1};
-    V0=Uinit{2};
-    
     [m,r] = size(U0);
     [n,~] = size(V0);
+    
     paras.m=m;
     paras.n=n;
     paras.r=r;
@@ -57,7 +27,7 @@ function runhist = vp_pGN(T, Uinit, vp_paras, cg_paras)
     tildeU_1 = Sigma_1 * S; 
     Tau_1 = Tau(1:r, 1:r);
     tildeV_1 = Tau_1 * T;
-    G = kr(tildeU_1, tildeV_1);
+    G = khatrirao(tildeU_1, tildeV_1);
     [W, Db, F] = qr(G);
     W1=W(:,1:r);
     
@@ -85,15 +55,15 @@ function runhist = vp_pGN(T, Uinit, vp_paras, cg_paras)
     
     while (iter < itmax)
         iter = iter + 1;
-        
+        fval(end+1)=fval_pre;
 
         Di=inv(D);
        
         % calculate B
-        B1=zeros(r,r);
-        B2=zeros(m-r,r);
-        B3=zeros(r,r);
-        B4=zeros(n-r,r);
+        Z1=zeros(r,r);
+        Z2=zeros(m-r,r);
+        Z3=zeros(r,r);
+        Z4=zeros(n-r,r);
 
         NDiF=N*(Di'*F);
         WTWNDiF=WTW*NDiF;
@@ -104,16 +74,19 @@ function runhist = vp_pGN(T, Uinit, vp_paras, cg_paras)
             tildeV_1_i=tildeV_1(:,i);
             WTWNDiFi=WTWNDiF(:,i);
 
+            
             a=reshape(Q1TV.*WTWNDiFi'*P1TU',[r*r,1]);
             W2W2TH1TMACi=a-W1*(W1'*a);
             a_mat=reshape(W2W2TH1TMACi,[r,r]);
 
-            B1(:,i)=a_mat'*tildeV_1_i;
-            B2(:,i)=P2TU*(WTWNDiFi.*(Q1TV'*tildeV_1_i));
-            B3(:,i)=a_mat*tildeU_1_i;
-            B4(:,i)=Q2TV*(WTWNDiFi.*(P1TU'*tildeU_1_i));
+            Z1(:,i)=a_mat'*tildeV_1_i;
+            Z2(:,i)=P2TU*(WTWNDiFi.*(Q1TV'*tildeV_1_i));
+            Z3(:,i)=a_mat*tildeU_1_i;
+            Z4(:,i)=Q2TV*(WTWNDiFi.*(P1TU'*tildeU_1_i));
         end   
  
+        B1=[Z1;Z3];
+
         Aparas.NDiF=NDiF;
         Aparas.WTWNDiF=WTWNDiF;
         Aparas.W1=W1;
@@ -121,9 +94,9 @@ function runhist = vp_pGN(T, Uinit, vp_paras, cg_paras)
         Aparas.tildeV_1=tildeV_1;
         Aparas.CCT=CCT;
 
-        runhist_X1_Y1 = X1_Y1_subproblem(Aparas, [B1;B3], cg_paras, paras);
-        runhist_X2 = X2_subproblem(Aparas, B2, cg_paras, paras);
-        runhist_Y2 = Y2_subproblem(Aparas, B4, cg_paras, paras);
+        runhist_X1_Y1 = X1_Y1_subproblem(Aparas, B1, cg_paras, paras);
+        runhist_X2 = X2_subproblem(Aparas, Z2, cg_paras, paras);
+        runhist_Y2 = Y2_subproblem(Aparas, Z4, cg_paras, paras);
 
         X1_Y1 = runhist_X1_Y1.X; % [X',Y']'
         X2 = runhist_X2.X2;
@@ -141,7 +114,6 @@ function runhist = vp_pGN(T, Uinit, vp_paras, cg_paras)
         V_pre = V;  
         
        
-        %%%%%%%%%%%% line search
         t=1.25;
         beta=0.8;
         for i=1:150
@@ -162,7 +134,7 @@ function runhist = vp_pGN(T, Uinit, vp_paras, cg_paras)
             tildeU_1 = Sigma_1 * S; 
             Tau_1 = Tau(1:r, 1:r);
             tildeV_1 = Tau_1 * T;
-            G = kr(tildeU_1, tildeV_1);
+            G = khatrirao(tildeU_1, tildeV_1);
             [W, Db, F] = qr(G);
             W1=W(:,1:r);
             F = F';
@@ -178,6 +150,7 @@ function runhist = vp_pGN(T, Uinit, vp_paras, cg_paras)
             fval_cur=fval_tilde(WTW,N);
             f_diff=fval_pre-fval_cur;
         
+           
             if f_diff>0
                 fval_pre=fval_cur;
                 break;
@@ -185,13 +158,8 @@ function runhist = vp_pGN(T, Uinit, vp_paras, cg_paras)
         end
 
         % Projction U, V onto Oblique manifold.
-        % if mod(iter,2)==1 % 
-            U=proj_oblique(U);
-            V=proj_oblique(V);
-        % else
-        %     U=proj_oblique_row(U);
-        %     V=proj_oblique_row(V);
-        % end    
+        U=proj_oblique(U);
+        V=proj_oblique(V);
 
         % Check for convergence.
         UV=[U;V];
@@ -202,7 +170,6 @@ function runhist = vp_pGN(T, Uinit, vp_paras, cg_paras)
         end
             
         relfval=f_diff/fval_init;
-        fval(end+1)=abs(relfval);
         if relfval <=ftol
             runhist.info=1;
             break;
@@ -213,21 +180,9 @@ function runhist = vp_pGN(T, Uinit, vp_paras, cg_paras)
         runhist.info=1;
     end     
 
-    % update the objective function value
-    %fval=fval+0.5*MA_norm;
-   
-    % calculate W
+    fval=fval+0.5*MA_norm;
     W=W_true*((U_true'*U).*(V_true'*V))*pinv((U'*U).*(V'*V));
-
-    %MA=kr(U_true,V_true)*W_true';
-    % W_opt=kr(U,V)\MA;
-    % W_opt=pinv(kr(U,V))*MA;
-
-    % [UU,SS,VV] = svd(kr(U,V),'econ');
-    % W_opt = VV*(SS\(UU'*MA));
-
-    % W_temp=W-W_opt';
-    % fprintf("the residual of W is %3.10f\n",norm(W_temp(:)));
+    
 
     % Update the output structure.
     runhist.U = U;

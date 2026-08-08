@@ -1,6 +1,4 @@
 function runhist = X1_Y1_subproblem (Aparas, B, cg_paras, paras)
-    gamma=0;
-
     % initialization
     r=paras.r;
     X = zeros(2*r,r);
@@ -10,7 +8,6 @@ function runhist = X1_Y1_subproblem (Aparas, B, cg_paras, paras)
     R_norm = norm(R(:));
     itmax=cg_paras.itmax;
     tol=cg_paras.tol;
-    %fprintf("X1_Y1_subproblem R norm is %3.4f\n", R_norm);
 
     while (iter  < itmax && R_norm>tol)
         % step 1
@@ -25,22 +22,19 @@ function runhist = X1_Y1_subproblem (Aparas, B, cg_paras, paras)
         end
 
         % Step 3
-        alpha = norm (R(:))^2 / trace(C'*AadjointA(Aparas, paras, C,gamma));
+        alpha = norm (R(:))^2 / trace(C'*AadjointA(Aparas, paras, C));
 
         % Step 4
         X = X + alpha * C;
 
         % Step 5
         R_pre=R;
-        R = R - alpha*AadjointA(Aparas, paras, C,gamma);
+        R = R - alpha*AadjointA(Aparas, paras, C);
 
         R_norm=norm(R(:));
     end
 
-    %fprintf("X1_Y1_subproblem iter=%d\n",iter);
-
     runhist.R_norm=R_norm;
     runhist.X=X;
     runhist.iter=iter;
-    %fprintf("------------------ X_1_Y1_subproblem iter=%d ---------------------------\n",iter);
 end    

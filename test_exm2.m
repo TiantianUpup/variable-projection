@@ -68,7 +68,7 @@ for i=1:trial
     fprintf("------------------------- the condition number of U=%3.10f, V=%3.10f, W=%3.10f ----------------------------\n", cond(U_true),cond(V_true),cond(W_true));
 
     %%%%%%%%%%% test data
-    r=10;
+    r=8;
     
     paras.m=m; 
     paras.n=n;   
@@ -199,7 +199,7 @@ fprintf("mean value of iteration of cp_als=%.4f, cpd_als=%.4f, cpd_nls=%.4f, vp=
 fprintf("mean value of cpu time of cp_als=%.4f, cpd_als=%.4f, cpd_nls=%.4f, vp=%.4f\n",mean(cput_cp_als_result),mean(cput_cpd_als_result),mean(cput_cpd_nls_result),mean(cput_vp_result));
 fprintf("vp, min=%3.4f, max=%3.4f\n",min(rel_error_vp_result),max(rel_error_vp_result));
 fprintf("cp_als, min=%3.4f, max=%3.4f\n",min(rel_error_cp_als_result),max(rel_error_cp_als_result));
-fprintf("cpd_als, min=%3.4f, max=%3.4f\n",min(rel_error_cpd_als_result),max(rel_error_cpd_als_result));
+fprintf("cpd_als, min=%3.4 f, max=%3.4f\n",min(rel_error_cpd_als_result),max(rel_error_cpd_als_result));
 fprintf("cpd_nls, min=%3.4f, max=%3.4f\n",min(rel_error_cpd_nls_result),max(rel_error_cpd_nls_result));    
 
 Result = [res_cp_als_result-res_vp_result, res_cpd_als_result-res_vp_result, res_cpd_nls_result-res_vp_result];
@@ -223,4 +223,15 @@ fclose(r_id);
 fclose(t_id); 
 disp("Time matrix is:");
 disp(T);
+% fprintf(r, mean(iter_vp_result),mean(rel_error_vp_result),mean(cput_vp_result),mean(iter_cp_als_result),mean(rel_error_cp_als_result),mean(cput_cp_als_result),mean(iter_cpd_als_result),mean(rel_error_cpd_als_result),mean(cput_cpd_als_result),mean(iter_cpd_nls_result),mean(rel_error_cpd_nls_result),mean(cput_cpd_nls_result));
+
+% Result_res = [res_cp_als_result-res_vp_result, res_cpd_als_result-res_vp_result, res_cpd_nls_result-res_vp_result];
+% prob_res=sum(all(Result_res >= 0, 2));
+% % prob=
+% max_gap=max(max(Result_res(Result_res >= 0)));
+% fprintf("the probability is %3.1f, the max residual is %3.2f\n",prob_res/trial,max_gap);
+% disp("Result_res matrix is:");
+% disp(Result_res);
+
+fprintf("rho is %d\n",rho); 
 

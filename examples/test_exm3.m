@@ -1,30 +1,14 @@
-clc; clear all; close all;
+function test_exm3(m,n,p,r,kappa)
+% root = fileparts(mfilename('fullpath'));
+% addpath(genpath(fullfile(root, 'tensor_toolbox')));
+% addpath(genpath(fullfile(root, 'tensorlab')));
+% addpath(genpath(fullfile(root, 'utils')));
+% addpath(genpath(fullfile(root, 'algo')));
 
-
-% addpath("E:\\matlab-code\\variable-projection\\tensor_toolbox")
-% addpath("E:\\matlab-code\\variable-projection\\tensorlab")
-
-root = fileparts(mfilename('fullpath'));
-addpath(genpath(fullfile(root, 'tensor_toolbox')));
-addpath(genpath(fullfile(root, 'tensorlab')));
-addpath(genpath(fullfile(root, 'utils')));
-addpath(genpath(fullfile(root, 'algo')));
-
-% case 1
-m=100;
-n=100;
-p=100;
-
-% case 2
-% m=30;
-% n=40;
-% p=1000;
-
-% case 3
-% m=100;
-% n=100;
-% p=10000;
-
+addpath('tensor_toolbox');
+addpath('tensorlab');
+addpath('utils');
+addpath('algo');
 
 trial=10;
 
@@ -54,28 +38,35 @@ res_cpd_nls_result=zeros(trial,1);
 rel_error_cpd_nls_result=zeros(trial,1);
 
 Rel_err=zeros(10,4);
-T=zeros(10,4);
+Time=zeros(10,4);
 count=1;
+for r=1:15
 for i=1:trial
     % truth factor matrices
-    r=15;
-    U_true=rand(m,r);
-    V_true=rand(n,r);
-    W_true=rand(p,r);
+    r_true=15;
+    U_true=rand(m,r_true);
+    V_true=rand(n,r_true);
 
-    MA=khatrirao(U_true,V_true)*W_true';
+    Z = orth(randn(p, r_true));
+    R = orth(randn(r_true, r_true));
+    s = logspace(0, -log10(kappa), r_true);
+    W_true = Z*diag(s)*R';
+    %fprintf("--------------- the condition number of W is %3.20f ----------------------\n",cond(W_true));
+
+    % W_true = randn(p,r);
+    % W_true(:,r) = W_true(:,r-1) + 1e-10*randn(p,1);
+    % fprintf("--------------- condition number is %3.20f ----------------------\n",cond(W_true));
+    % X=generate_cp_tensor(U_true,V_true,W_true);
+
+    W_n=randn(p,r_true);
+    rho_w=0.01*(norm(W_true(:))/norm(W_n(:)));
+    % % disp(rho_w);
+    W_noise=W_true+rho_w*W_n;
+
+    T={U_true,V_true,W_true};
     X=generate_cp_tensor(U_true,V_true,W_true);
-
-
+    
     %%%%%%%%%%% test data
-    r=12;
-    paras.m=m; 
-    paras.n=n;   
-    paras.r=r; 
-
-    % U = orth(rand(m,r));
-    % V = orth(rand(n,r));
-
     % initial point
     U = rand(m,r);
     U = proj_oblique(U);
@@ -83,7 +74,9 @@ for i=1:trial
     V = proj_oblique(V);
     W = rand(p,r);
     W = proj_oblique(W);
+    
     Uinit={U,V,W};
+    %Uinit_vp={U,V};
 
     % gevd initialization
     % cput_gevd=cputime;
@@ -93,7 +86,9 @@ for i=1:trial
     % U=Uinit{1};
     % V=Uinit{2};
     
-    
+    % fprintf("the size of U is\n");
+    % disp(size(U));
+
     %%%%%%%%%%%%%%%%%%%%%%%%% vp_pGN method (ours)
     vp_paras.gamma=0;
     vp_paras.itmax=1500;
@@ -103,7 +98,7 @@ for i=1:trial
     cg_paras.itmax=500;
     cg_paras.tol=1e-6;
     
-    runhist_vp_0 = vp_pGN(U,V,U_true,V_true,W_true,vp_paras,cg_paras);
+    runhist_vp_0 = vp_pGN(T, Uinit, vp_paras, cg_paras);
     Uhat_1 = runhist_vp_0.U;
     Vhat_1 = runhist_vp_0.V;
     What_1 = runhist_vp_0.W;
@@ -176,50 +171,50 @@ for i=1:trial
     rel_error_cpd_nls_result(i)=norm(lab_res_rand(:))/norm(X(:));
 
     Rel_err(count,:)=[rel_error_cp_als_result(i),rel_error_cpd_als_result(i),rel_error_cpd_nls_result(i),rel_error_vp_result(i)];
-    T(count,:)=[cput_als,cput_cpd_als,cput_cpd_nls,cput_vp_0];
+    Time(count,:)=[cput_als,cput_cpd_als,cput_cpd_nls,cput_vp_0];
     count=count+1;
 
-    fprintf("============================= iter=%d ===================\n",i);
-    fprintf("iter=%d, cput=%3.4f, the residual of X and Xhat for variable_projection_gamma (gamma=0) is %3.10f, res_err is %3.10f\n",iter_vp_0,cput_vp_0,norm(Xres0(:)),norm(Xres0(:))/norm(X(:)));
-    fprintf("iter=%d, cput=%3.4f, the residual of the als method is %3.10f, res_err is %3.10f\n",iter_als,cput_als,norm(als_res(:)),norm(als_res(:))/norm(X(:)));
-    fprintf("iter=%d, cput=%3.4f, the residual of the cpd_als method is %3.10f, res_err is %3.10f\n",iter_cpd_als,cput_cpd_als,norm(lab_res(:)), norm(lab_res(:))/norm(X(:)));
-    fprintf("iter=%d, cput=%3.4f, the residual of the cpd_nls method is %3.10f, res_err is %3.10f\n",iter_cpd_nls,cput_cpd_nls,norm(lab_res_rand(:)),norm(lab_res_rand(:))/norm(X(:)));
+    % fprintf("============================= iter=%d ===================\n",i);
+    % fprintf("iter=%d, cput=%3.4f, the residual of X and Xhat for variable_projection_gamma (gamma=0) is %3.10f, res_err is %3.10f\n",iter_vp_0,cput_vp_0,norm(Xres0(:)),norm(Xres0(:))/norm(X(:)));
+    % fprintf("iter=%d, cput=%3.4f, the residual of the als method is %3.10f, res_err is %3.10f\n",iter_als,cput_als,norm(als_res(:)),norm(als_res(:))/norm(X(:)));
+    % fprintf("iter=%d, cput=%3.4f, the residual of the cpd_als method is %3.10f, res_err is %3.10f\n",iter_cpd_als,cput_cpd_als,norm(lab_res(:)), norm(lab_res(:))/norm(X(:)));
+    % fprintf("iter=%d, cput=%3.4f, the residual of the cpd_nls method is %3.10f, res_err is %3.10f\n",iter_cpd_nls,cput_cpd_nls,norm(lab_res_rand(:)),norm(lab_res_rand(:))/norm(X(:)));
 end
 
 fprintf("========================================== rank %d approximation ==========================================\n",r);
 fprintf("%d &%3.1f &%.4f &%3.2f &%3.1f &%.4f &%3.2f &%3.1f &%.4f &%3.2f &%3.1f &%.4f &%3.2f\n",r,mean(iter_cp_als_result),mean(rel_error_cp_als_result),mean(cput_cp_als_result),mean(iter_cpd_als_result),mean(rel_error_cpd_als_result),mean(cput_cpd_als_result),mean(iter_cpd_nls_result),mean(rel_error_cpd_nls_result),mean(cput_cpd_nls_result), mean(iter_vp_result),mean(rel_error_vp_result),mean(cput_vp_result));
 
 
-fprintf("relative error of cp_als=%.4f, cpd_als=%.4f, cpd_nls=%.4f,vp=%.4f\n",mean(rel_error_cp_als_result),mean(rel_error_cpd_als_result),mean(rel_error_cpd_nls_result),mean(rel_error_vp_result));
-fprintf("mean value of residul value of cp_als=%.4f, cpd_als=%.4f, cpd_nls=%.4f,vp=%.4f\n",mean(res_cp_als_result),mean(res_cpd_als_result),mean(res_cpd_nls_result),mean(res_vp_result));
-fprintf("mean value of iteration of cp_als=%.4f, cpd_als=%.4f, cpd_nls=%.4f, vp=%.4f\n",mean(iter_cp_als_result),mean(iter_cpd_als_result),mean(iter_cpd_nls_result),mean(iter_vp_result));
-fprintf("mean value of cpu time of cp_als=%.4f, cpd_als=%.4f, cpd_nls=%.4f, vp=%.4f\n",mean(cput_cp_als_result),mean(cput_cpd_als_result),mean(cput_cpd_nls_result),mean(cput_vp_result));
-fprintf("vp, min=%3.4f, max=%3.4f\n",min(rel_error_vp_result),max(rel_error_vp_result));
-fprintf("cp_als, min=%3.4f, max=%3.4f\n",min(rel_error_cp_als_result),max(rel_error_cp_als_result));
-fprintf("cpd_als, min=%3.4f, max=%3.4f\n",min(rel_error_cpd_als_result),max(rel_error_cpd_als_result));
-fprintf("cpd_nls, min=%3.4f, max=%3.4f\n",min(rel_error_cpd_nls_result),max(rel_error_cpd_nls_result));
+% fprintf("relative error of cp_als=%.4f, cpd_als=%.4f, cpd_nls=%.4f,vp=%.4f\n",mean(rel_error_cp_als_result),mean(rel_error_cpd_als_result),mean(rel_error_cpd_nls_result),mean(rel_error_vp_result));
+% fprintf("mean value of residul value of cp_als=%.4f, cpd_als=%.4f, cpd_nls=%.4f,vp=%.4f\n",mean(res_cp_als_result),mean(res_cpd_als_result),mean(res_cpd_nls_result),mean(res_vp_result));
+% fprintf("mean value of iteration of cp_als=%.4f, cpd_als=%.4f, cpd_nls=%.4f, vp=%.4f\n",mean(iter_cp_als_result),mean(iter_cpd_als_result),mean(iter_cpd_nls_result),mean(iter_vp_result));
+% fprintf("mean value of cpu time of cp_als=%.4f, cpd_als=%.4f, cpd_nls=%.4f, vp=%.4f\n",mean(cput_cp_als_result),mean(cput_cpd_als_result),mean(cput_cpd_nls_result),mean(cput_vp_result));
+% fprintf("vp, min=%3.4f, max=%3.4f\n",min(rel_error_vp_result),max(rel_error_vp_result));
+% fprintf("cp_als, min=%3.4f, max=%3.4f\n",min(rel_error_cp_als_result),max(rel_error_cp_als_result));
+% fprintf("cpd_als, min=%3.4f, max=%3.4f\n",min(rel_error_cpd_als_result),max(rel_error_cpd_als_result));
+% fprintf("cpd_nls, min=%3.4f, max=%3.4f\n",min(rel_error_cpd_nls_result),max(rel_error_cpd_nls_result));    
 
-Result = [res_cp_als_result-res_vp_result, res_cpd_als_result-res_vp_result, res_cpd_nls_result-res_vp_result];
-prob=sum(all(Result >= 0, 2));
-% prob=
-max_gap=max(max(Result(Result >= 0)));
-fprintf("the probability is %3.1f, the max residual is %3.2f\n",prob/trial,max_gap);
-disp("Result matrix is:");
-disp(Result);
+% Result = [res_cp_als_result-res_vp_result, res_cpd_als_result-res_vp_result, res_cpd_nls_result-res_vp_result];
+% prob=sum(all(Result >= 0, 2));
+% % prob=
+% max_gap=max(max(Result(Result >= 0)));
+% fprintf("the probability is %3.1f, the max residual is %3.2f\n",prob/trial,max_gap);
+% disp("Result matrix is:");
+% disp(Result);
 
-disp("Rel_err matrix is:");
-disp(Rel_err);
+% disp("Rel_err matrix is:");
+% disp(Rel_err);
 
-formatSpec = '%.4f %.4f %.4f %.4f\n';
-r_id = fopen('rel_err.txt', 'w');
-t_id = fopen('time.txt', 'w');
-fprintf(r_id, formatSpec, Rel_err');
-fprintf(t_id, formatSpec, T');
+% formatSpec = '%.4f %.4f %.4f %.4f\n';
+% r_id = fopen('rel_err.txt', 'w');
+% t_id = fopen('time.txt', 'w');
+% fprintf(r_id, formatSpec, Rel_err');
+% fprintf(t_id, formatSpec, Time');
 
-fclose(r_id); 
-fclose(t_id); 
-disp("Time matrix is:");
-disp(T);
+% fclose(r_id); 
+% fclose(t_id); 
+% disp("Time matrix is:");
+% disp(Time);
 
-
- 
+end
+end

@@ -3,41 +3,11 @@ clc; clear all; close all;
 
 addpath("E:\\matlab-code\\variable-projection\\tensor_toolbox")
 addpath("E:\\matlab-code\\variable-projection\\tensorlab")
-% m=30;
-% n=40;
-% p=1000;
 
-% m=15;
-% n=15;
-% p=15;
+m=100;
+n=100;
+p=100;
 
-% m=30;
-% n=40;
-% p=50;
-
-m=30;
-n=30;
-p=40;
-
-% m=100;
-% n=100;
-% p=100;
-
-% m=30;
-% n=40;
-% p=1000;
-
-% m=100;
-% n=100;
-% p=10000;
-
-% m=30;
-% n=30;
-% p=40;
-
-% m=2; 
-% n=3;
-% p=3;
 trial=10;
 
 %%%%%%%% variable projection method
@@ -45,24 +15,6 @@ iter_vp_result=zeros(trial,1);
 cput_vp_result=zeros(trial,1);
 res_vp_result=zeros(trial,1);
 rel_error_vp_result=zeros(trial,1);
-
-%%%%%%%% variable projection method (random initialization)
-iter_vp_rand_result=zeros(trial,1);
-cput_vp_rand_result=zeros(trial,1);
-res_vp_rand_result=zeros(trial,1);
-rel_error_rand_vp_result=zeros(trial,1);
-
-%%%%%%%% v4
-iter_vp_rand_result_4=zeros(trial,1);
-cput_vp_rand_result_4=zeros(trial,1);
-res_vp_rand_result_4=zeros(trial,1);
-rel_error_rand_vp_result_4=zeros(trial,1);
-
-%%%%%%%% variable projection gamma method
-iter_vp_gamma_result=zeros(trial,1);
-cput_vp_gamma_result=zeros(trial,1);
-res_vp_gamma_result=zeros(trial,1);
-rel_error_vp_gamma_result=zeros(trial,1);
 
 %%%%%%%% cp_als method
 iter_cp_als_result=zeros(trial,1);
@@ -87,32 +39,55 @@ c=0.9;
 % U_true=rand(m,r);
 % V_true=rand(n,r);
 % W_true=rand(p,r);
-Rel_err=zeros(10,4);
-T=zeros(10,4);
-count=1;
+
 for i=1:trial
     % truth factor matrices
+%    % A concrete example
+%     m=100;
+%     n=100;
+%     p=100;
+
+%     %X=zeros(m,n,p);
+%     U_true=rand(m,2);
+%     U_1=U_true(:,1);
+%     U_2=U_true(:,2);
+%     V_true=rand(n,2);
+%     V_1=V_true(:,1);
+%     V_2=V_true(:,2);
+%     W_true=rand(p,2);
+%     W_1=W_true(:,1);
+%     W_2=W_true(:,2);
+%     X=reshape(kron(kron(W_2,V_1),U_1),[m,n,p])+reshape(kron(kron(W_1,V_2),U_1),[m,n,p])+reshape(kron(kron(W_1,V_1),U_2),[m,n,p]);
+%     MA=khatrirao(U_true,V_true)*W_true';
+
     r=15;
     U_true=rand(m,r);
     V_true=rand(n,r);
     W_true=rand(p,r);
 
+    factor=1;
+    for k = 1:r
+        Ui=U_true(:,k);
+        Vi=V_true(:,k);
+
+        U_true(:,k)=Ui/factor;
+        V_true(:,k)=Vi*factor;
+        factor=factor*2;
+    end
+
+    % disp(U_true);
+    % disp(rank(U_true));
+    % disp(rank(V_true));
+
     MA=khatrirao(U_true,V_true)*W_true';
     X=generate_cp_tensor(U_true,V_true,W_true);
 
-    N=randn(m,n,p);
-    rho_t=0.1*(norm(X(:))/norm(N(:)));
-    X_noise=X+rho_t*N;
 
-    mn=m*n;
-    N=randn(mn,p);
-    rho=0.1*((norm(MA(:))/norm(N(:))));
-    MA_noise=MA+rho*N;
 
 
     %%%%%%%%%%% test data
-    r=5;
-    paras.m=m;
+    r=12;
+    paras.m=m; 
     paras.n=n;   
     paras.r=r;
 
@@ -128,17 +103,6 @@ for i=1:trial
     W = proj_oblique(W);
     Uinit={U,V,W};
 
-    % gevd initialization
-    % cput_gevd=cputime;
-    % [Uinit,output] = cpd_gevd(X,r);
-    % fprintf("--------------------------- cpd_gevd costs %3.10f ----------------------------\n",cputime-cput_gevd);
-
-    % U=Uinit{1};
-    % V=Uinit{2};
-    
-    % fprintf("the size of U is\n");
-    % disp(size(U));
-
     vp_paras.gamma=0;
     vp_paras.itmax=1500;
     vp_paras.tol=1e-6; 
@@ -149,8 +113,8 @@ for i=1:trial
     cg_paras.lambda=0;
 
     %profile on;
-    runhist_vp_0 = variable_projection_simple_opt_v5(U,V,U_true,V_true,W_true,MA_noise,vp_paras,cg_paras,paras);
-    
+    runhist_vp_0 = variable_projection_simple_opt_v5(U,V,U_true,V_true,W_true,MA,vp_paras,cg_paras,paras);
+    %runhist_vp_0 = variable_projection_simple(U,V,U_true,V_true,W_true,MA_noise,vp_paras,cg_paras,paras);
     %profile off;
     %profile viewer;
     Uhat_1 = runhist_vp_0.U;
@@ -170,17 +134,17 @@ for i=1:trial
 
     % tensor_toolbox method
     timect = cputime;
-     [P,U0,out] = cp_als(tensor(X_noise),r,...
+    [P,U0,out] = cp_als(tensor(X),r,...
         'printitn',0 , ...
         'init', Uinit, ...
         'maxiters', 1500, ...
         'tol', 1e-6);
-   
+
     cput_als = cputime - timect;   
     als_res=full(P)-X;
     fval_als=out.fval;
     iter_als=out.iters;
-   
+
     iter_cp_als_result(i)=iter_als;
     cput_cp_als_result(i)=cput_als;
     res_cp_als_result(i)=norm(als_res(:));
@@ -192,8 +156,7 @@ for i=1:trial
     options_als.Algorithm = @cpd_als;
     options_als.AlgorithmOptions.MaxIter = 1500;      % Default 500
     timect = cputime;
-    %[Xhat,out_cpd_als]=cpd(X,Uinit,options_als);
-    [Xhat,out_cpd_als]=cpd(X_noise,Uinit,options_als);
+    [Xhat,out_cpd_als]=cpd(X,Uinit,options_als);
     %[Xhat,out_cpd_als]=cpd(X,r,options_als);
     cput_cpd_als = cputime - timect;
     lab_res=X-cpdgen(Xhat);
@@ -216,9 +179,8 @@ for i=1:trial
     options_nls.AlgorithmOptions.MaxIter = 1500;      % Default 500
     options_nls.AlgorithmOptions.CGMaxIter = 500;      % Default 15
     timect_rnd = cputime;
-    %[Uhat,out_cpd_nls]=cpd(X,Uinit,options_nls);
-    [Uhat,out_cpd_nls]=cpd(X_noise,Uinit,options_nls);
-    %[Uhat,out_cpd_nls]=cpd(X,r,options_nls);
+    
+    [Uhat,out_cpd_nls]=cpd(X,Uinit,options_nls);
     cput_cpd_nls = cputime - timect_rnd;
     lab_res_rand=X-cpdgen(Uhat);
     fval_cpd_nls=out_cpd_nls.Algorithm.fval;
@@ -232,10 +194,6 @@ for i=1:trial
     cput_cpd_nls_result(i)=cput_cpd_nls;
     res_cpd_nls_result(i)=norm(lab_res_rand(:));
     rel_error_cpd_nls_result(i)=norm(lab_res_rand(:))/norm(X(:));
-
-    T(count,:)=[cput_als,cput_cpd_als,cput_cpd_nls,cput_vp_0];
-    Rel_err(count,:)=[rel_error_cp_als_result(i),rel_error_cpd_als_result(i),rel_error_cpd_nls_result(i),rel_error_vp_result(i)];
-    count=count+1;
 
     fprintf("============================= iter=%d ===================\n",i);
     fprintf("iter=%d, cput=%3.4f, the residual of X and Xhat for variable_projection_gamma (gamma=0) is %3.10f, res_err is %3.10f\n",iter_vp_0,cput_vp_0,norm(Xres0(:)),norm(Xres0(:))/norm(X(:)));
@@ -290,80 +248,7 @@ fprintf("the probability is %3.1f, the max residual is %3.2f\n",prob/trial,max_g
 disp("Result matrix is:");
 disp(Result);
 
-disp("Rel_err matrix is:");
-disp(Rel_err);
 
-formatSpec = '%.4f %.4f %.4f %.4f\n';
-formatSpec_t = '%.4f %.4f %.4f %.4f\n';
-r_id = fopen('rel_err.txt', 'w');
-t_id = fopen('time.txt', 'w');
-fprintf(r_id, formatSpec, Rel_err');
-fprintf(t_id, formatSpec_t, T');
-
-fclose(r_id); 
-fclose(t_id); 
-disp("Time matrix is:");
-disp(T);
-
-% fprintf(r, mean(iter_vp_result),mean(rel_error_vp_result),mean(cput_vp_result),mean(iter_cp_als_result),mean(rel_error_cp_als_result),mean(cput_cp_als_result),mean(iter_cpd_als_result),mean(rel_error_cpd_als_result),mean(cput_cpd_als_result),mean(iter_cpd_nls_result),mean(rel_error_cpd_nls_result),mean(cput_cpd_nls_result));
-
-% Result_res = [res_cp_als_result-res_vp_result, res_cpd_als_result-res_vp_result, res_cpd_nls_result-res_vp_result];
-% prob_res=sum(all(Result_res >= 0, 2));
-% % prob=
-% max_gap=max(max(Result_res(Result_res >= 0)));
-% fprintf("the probability is %3.1f, the max residual is %3.2f\n",prob_res/trial,max_gap);
-% disp("Result_res matrix is:");
-% disp(Result_res);
 
 fprintf("rho is %d\n",rho); 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% plot
-fig=figure();
-% semilogy(fval_cpd_als,'-o', 'LineWidth', 1.5); hold all; %'g--s',
-% semilogy(fval_als,'-*', 'LineWidth', 1.5); hold all; % 'g--s',
-% semilogy(fval_cpd_nls, '-square','LineWidth', 1.5); hold all; % 'b-*',
-% semilogy(fval_vp, '-x','LineWidth', 1.5); 
-
-plot(log10(fval_cpd_als),'-o', 'LineWidth', 1.5); hold all; %'g--s',
-plot(log10(fval_als),'-*', 'LineWidth', 1.5); hold all; % 'g--s',
-plot(log10(fval_cpd_nls), '-square','LineWidth', 1.5); hold all; % 'b-*',
-plot(log10(fval_vp), '-x','LineWidth', 1.5); 
-
-% semilogy(fval_vp); hold all;
-% semilogy(fval_cpd_als); hold all;
-% semilogy(fval_cpd_nls);
-ylabel('objective function','FontSize',20,'FontWeight','bold'); 
-xlabel('iterations','FontSize',20,'FontWeight','bold');
-set(gca,'FontSize',13,'FontWeight','bold');
-%title('Convergence plot'); 
-
-
-% max_iter = max([length(fval_cpd_als), length(fval_als), length(fval_cpd_nls), length(fval_vp)]);
-% xlim([-10, max_iter]);
-
-x_range = xlim;
-xlim([-15, x_range(2)]);
-
-y_range = ylim;
-ylim([-5, y_range(2)]);
-%%xticks(0:50:max_iter);
-legend('cpd\_als','cp\_als','cpd\_nls','vp\_pGN','FontSize', 15,'FontWeight', 'bold');  % 
-hold off;
-
-%grid on;  
-
-ax = gca;
-outerpos = ax.OuterPosition;
-ti = ax.TightInset; 
-left = outerpos(1) + ti(1);
-bottom = outerpos(2) + ti(2);
-ax_width = outerpos(3) - ti(1) - ti(3);
-ax_height = outerpos(4) - 1.1*ti(2) -1.1* ti(4);
-ax.Position = [left bottom ax_width ax_height];
-
-fig = gcf;
-fig.PaperPositionMode = 'auto'
-fig_pos = fig.PaperPosition;
-fig.PaperSize = [fig_pos(3) fig_pos(4)];
-
-print(fig,'noise-10','-dpdf') 

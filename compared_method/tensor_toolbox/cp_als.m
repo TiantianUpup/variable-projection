@@ -178,7 +178,7 @@ else
     for iter = 1:maxiters
         
         fitold = fit;
-        fval=[fval,fval_pre];
+        %fval=[fval,fval_pre];
         
         % Iterate over all N modes of the tensor
         for n = dimorder(1:end)
@@ -214,8 +214,10 @@ else
         P_tensor=tensor(P);
 
         fval_cur=0.5*norm(P_tensor-X)^2;
-        %relfval=abs(fval_pre-fval_cur)/fval_init;
+        relfval=abs(fval_pre-fval_cur)/fval_init;
+        fval(end+1)=relfval;
         fval_pre=fval_cur;
+
 
         %relstep=norm(P_tensor-P_tensor_pre)/norm(P_tensor);
 

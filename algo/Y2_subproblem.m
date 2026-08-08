@@ -3,7 +3,6 @@ function runhist = Y2_subproblem (Aparas, B, cg_paras, paras)
     r=paras.r;
     X = zeros(n-r,r);
     R=B;
-    gamma=0;
     
     iter = 0;
     R_norm = norm(R(:));
@@ -24,22 +23,19 @@ function runhist = Y2_subproblem (Aparas, B, cg_paras, paras)
         end
 
         % Step 3
-        alpha = norm (R(:))^2 / trace(C'*CadjointC(Aparas, paras, C,gamma));
+        alpha = norm (R(:))^2 / trace(C'*CadjointC(Aparas, paras, C));
 
         % Step 4
         X = X + alpha * C;
 
         % Step 5
         R_pre=R;
-        R = R - alpha*CadjointC(Aparas, paras, C,gamma);
+        R = R - alpha*CadjointC(Aparas, paras, C);
 
         R_norm=norm(R(:));
     end
 
-    %fprintf("X2_subproblem iter=%d,R norm is %3.12f\n",iter,R_norm);
-
     runhist.R_norm=R_norm;
     runhist.Y2=X;
     runhist.iter=iter;
-    %fprintf("------------------ Y2_subproblem iter=%d ---------------------------\n",iter);
 end
