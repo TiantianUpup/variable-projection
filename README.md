@@ -1,25 +1,23 @@
 # A Projected Gauss-Newton Variable Projection Method for Low Rank Approximations of Tensors
 This package includes a MATLAB implementation of the algorithm vp_pGN presented in the paper "A projected Gauss-Newton variable projection method for low rank approximations of tensors" by Tiantian He, Shenglong Hu and Zheng-Hai Huang.
 
+### Introduction
+The `algo` folder contains our core solver `vp_pGN`
 
-### Copyright
-### Quickstart
-`vp_pGN` is the core solver in the folder `algo`.
-
-#### usage
+The solver requires the following parameters:
 ```matlab
 runhist = vp_pGN(T, Uinit, vp_paras, cg_paras);
 ```
-- `T`: Factor matrices of the ground-truth tensor.
-- `Uinit`: Initial factor matrices.
-- `vp_paras`: Parameters of the variable projection method.
-- `cg_paras`: Parameters of the conjugate gradient method.
+- `T`: factor matrices of the ground-truth tensor
+- `Uinit`: initial factor matrices
+- `vp_paras`: parameters of the variable projection method
+- `cg_paras`: parameters of the conjugate gradient method
 
 The solver returns `runhist` containing:
-- `runhist.U`, `runhist.V`, `runhist.W`: Computed factor matrices.
-- `runhist.fval`: Objective function values during iterations.
-- `runhist.iter`: Number of iterations.
-- `runhist.cput`: Computational time.
+- `runhist.U`, `runhist.V`, `runhist.W`: computed factor matrices
+- `runhist.fval`: the history of the relative changes of the objective function
+- `runhist.iter`: number of iterations
+- `runhist.cput`: CPU time
 
 For example:
 ```matlab
@@ -40,11 +38,13 @@ W = rand(p,r); W = proj_oblique(W);
 Uinit={U,V,W};
 
 vp_paras.itmax=1500; vp_paras.xtol=1e-6; vp_paras.ftol=1e-12; 
-
 cg_paras.itmax=500; cg_paras.tol=1e-6;
 
 runhist = vp_pGN(T, Uinit, vp_paras, cg_paras);
 ```
+
+### Quickstart
+
 
 All the numerical results are saved in the folder `results`
 
