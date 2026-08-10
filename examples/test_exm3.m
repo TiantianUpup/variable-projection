@@ -8,7 +8,8 @@
 
 clc; clear all; close all;
 
-addpath('../compared_method/');
+addpath('../compared_method/tensor_toolbox');
+addpath('../compared_method/tensorlab');
 addpath('../utils');
 addpath('../algo');
 
@@ -60,7 +61,7 @@ p=50;
 sigma=0.001;
 kappa=1e6;
 
-for r=[2,8,13]
+for r=1:15
 for i=1:trial
     U_true=rand(m,r_true);
     V_true=rand(n,r_true);
@@ -87,7 +88,7 @@ for i=1:trial
     
     Uinit={U,V,W};
 
-    
+
     %%%%%%%%%%%%%%%%%%%%%%%%% vp_pGN method (ours)
     vp_paras.itmax=1500;
     vp_paras.xtol=1e-6; 

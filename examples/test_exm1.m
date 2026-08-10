@@ -9,7 +9,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 clc; clear all; close all;
-addpath('../compared_method');
+addpath('../compared_method/tensor_toolbox');
+addpath('../compared_method/tensorlab');
 addpath('../utils');
 addpath('../algo');
 
@@ -73,7 +74,7 @@ Time=zeros(10,4);
 count=1;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% main loop
-for r=1:15
+for r=[12,12,13,14]
 for i=1:trial
     % truth factor matrices
     U_true=rand(m,r_true);

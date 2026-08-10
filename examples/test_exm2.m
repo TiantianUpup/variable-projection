@@ -2,7 +2,7 @@
 % demo_exm3 reproduces the numerical experiments in Subsection 6.2
 % (Table 4 and Table 5).
 %
-% The factor matrices U and W are ill-conditioned.
+% This example considers the factor matrices U and W are ill-conditioned.
 % The parameter kappa controls the condition number of U and W.
 %
 % The experiments reported in the paper use kappa = 1e3 and 1e4.
@@ -67,7 +67,7 @@ count=1;
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% main loop
-for r=[13,14]
+for r=1:15
 for i=1:trial
 % truth factor matrices
     r_true=15;

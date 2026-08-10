@@ -9,7 +9,8 @@
 
 clc; clear all; close all;
 
-addpath('../compared_method');
+addpath('../compared_method/tensor_toolbox');
+addpath('../compared_method/tensorlab');
 addpath('../utils');
 addpath('../algo');
 
