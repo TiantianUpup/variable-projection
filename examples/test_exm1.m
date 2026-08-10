@@ -1,13 +1,47 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% demo_exm1 reproduces the numerical experiments in Subsection 6.1
+% (Tables 1-3).
+%
+% This example considers tensors with a large third dimension p.
+%
+% The experiments reported in the paper consider
+% p = 100, 1000, and 10000 with different values of m and n.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
-%function test_exm1(m,n,p,r)
 clc; clear all; close all;
 addpath('../compared_method');
 addpath('../utils');
 addpath('../algo');
 
 
+
+% Case 1: corresponds to Table 1
+m=100;
+n=100;
+p=100;
+
+% Case 2: corresponds to Table 2
+% m=30;
+% n=40;
+% p=1000;
+
+% Case 3: corresponds to Table 3
+% m=100;
+% n=100;
+% p=10000;
+
+
+rng(24);
 trial=10;
+r_true=15;
+
+filename = sprintf('../results/ex1-%d.txt', p);
+fid = fopen(filename,'w');
+
+myfprintf(fid, "================================ The results obtained by the four methods.=========================\n");
+myfprintf(fid, "      ||        cp_als       ||       cpd_als       ||       cpd_nls       ||       vp_pGN        || \n");
+myfprintf(fid, " rank ||  rel_er    time     ||  rel_er     time    ||  rel_er     time    ||  rel_er    time     || \n");
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% % Running history
 %%%%%%%% vp_pGN method
@@ -38,30 +72,16 @@ Rel_err=zeros(10,4);
 Time=zeros(10,4);
 count=1;
 
-m=100;
-n=100;
-p=100;
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% main loop
 for r=1:15
 for i=1:trial
     % truth factor matrices
-    r_true=15;
     U_true=rand(m,r_true);
     V_true=rand(n,r_true);
     W_true=rand(p,r_true);
     T={U_true,V_true,W_true};
 
     X=generate_cp_tensor(U_true,V_true,W_true);
-
-
-    % %%%%%%%%%%% test data
-    % r=12;
-    % paras.m=m; 
-    % paras.n=n;   
-    % paras.r=r; 
-
-    % U = orth(rand(m,r));
-    % V = orth(rand(n,r));
 
     % initial point
     U = rand(m,r);
@@ -72,16 +92,7 @@ for i=1:trial
     W = proj_oblique(W);
     
     Uinit={U,V,W};
-    Uinit_vp={U,V};
-
-    % gevd initialization
-    % cput_gevd=cputime;
-    % [Uinit,output] = cpd_gevd(X,r);
-    % fprintf("--------------------------- cpd_gevd costs %3.10f ----------------------------\n",cputime-cput_gevd);
-
-    % U=Uinit{1};
-    % V=Uinit{2};
-    
+   
     
     %%%%%%%%%%%%%%%%%%%%%%%%% vp_pGN method (ours)
     vp_paras.itmax=1500;
@@ -90,14 +101,6 @@ for i=1:trial
     
     cg_paras.itmax=500;
     cg_paras.tol=1e-6;
-
-    % options_vp = struct;
-    % options_vp.NLS.xtol = 1e-6; 
-    % options_vp.NLS.ftol = 1e-12;
-    % options_vp.NLS.itmax = 1500;
-
-    % options_vp.CG.itmax = 500;
-    % options_vp.CG.tol = 1e-6;
 
     runhist_vp_0 = vp_pGN(T, Uinit, vp_paras, cg_paras);
     Uhat_1 = runhist_vp_0.U;
@@ -122,7 +125,7 @@ for i=1:trial
         'printitn',0 , ...
         'init', Uinit, ...
         'maxiters', 1500, ...
-        'tol', 1e-8);
+        'tol', 1e-6);
 
     cput_als = cputime - timect;   
     als_res=full(P)-X;
@@ -139,7 +142,6 @@ for i=1:trial
     options_als = struct;
     options_als.Algorithm = @cpd_als;
     options_als.AlgorithmOptions.MaxIter = 1500;     
-    options_als.AlgorithmOptions.TolFun = 1e-12; 
     timect = cputime;
     [Xhat,out_cpd_als]=cpd(X,Uinit,options_als);
     cput_cpd_als = cputime - timect;
@@ -158,10 +160,9 @@ for i=1:trial
     options_nls.Compression = false;
     options_nls.Algorithm = @cpd_nls;
     options_nls.AlgorithmOptions.MaxIter = 1500;      
-    options_nls.AlgorithmOptions.CGMaxIter = 500;     
-%     options_nls.AlgorithmOptions.CGTol = 1e-12;    
+    options_nls.AlgorithmOptions.CGMaxIter = 500;  
+
     timect_rnd = cputime;
-    
     [Uhat,out_cpd_nls]=cpd(X,Uinit,options_nls);
     cput_cpd_nls = cputime - timect_rnd;
     lab_res_rand=X-cpdgen(Uhat);
@@ -176,48 +177,22 @@ for i=1:trial
     Rel_err(count,:)=[rel_error_cp_als_result(i),rel_error_cpd_als_result(i),rel_error_cpd_nls_result(i),rel_error_vp_result(i)];
     Time(count,:)=[cput_als,cput_cpd_als,cput_cpd_nls,cput_vp_0];
     count=count+1;
-
-    % fprintf("============================= iter=%d ===================\n",i);
-    % fprintf("iter=%d, cput=%3.4f, the residual of X and Xhat for variable_projection_gamma (gamma=0) is %3.10f, res_err is %3.10f\n",iter_vp_0,cput_vp_0,norm(Xres0(:)),norm(Xres0(:))/norm(X(:)));
-    % fprintf("iter=%d, cput=%3.4f, the residual of the als method is %3.10f, res_err is %3.10f\n",iter_als,cput_als,norm(als_res(:)),norm(als_res(:))/norm(X(:)));
-    % fprintf("iter=%d, cput=%3.4f, the residual of the cpd_als method is %3.10f, res_err is %3.10f\n",iter_cpd_als,cput_cpd_als,norm(lab_res(:)), norm(lab_res(:))/norm(X(:)));
-    % fprintf("iter=%d, cput=%3.4f, the residual of the cpd_nls method is %3.10f, res_err is %3.10f\n",iter_cpd_nls,cput_cpd_nls,norm(lab_res_rand(:)),norm(lab_res_rand(:))/norm(X(:)));
 end
 
-%fprintf("========================================== rank %d approximation ==========================================\n",r);
-fprintf("%d &%3.1f &%.4f &%3.2f &%3.1f &%.4f &%3.2f &%3.1f &%.4f &%3.2f &%3.1f &%.4f &%3.2f\n",r,mean(iter_cp_als_result),mean(rel_error_cp_als_result),mean(cput_cp_als_result),mean(iter_cpd_als_result),mean(rel_error_cpd_als_result),mean(cput_cpd_als_result),mean(iter_cpd_nls_result),mean(rel_error_cpd_nls_result),mean(cput_cpd_nls_result), mean(iter_vp_result),mean(rel_error_vp_result),mean(cput_vp_result));
+myfprintf(fid," %d    ||  %.4f     %3.2f    ||  %.4f      %3.2f   ||  %.4f      %3.2f   ||  %.4f      %3.2f   || \n",r,mean(rel_error_cp_als_result),mean(cput_cp_als_result),mean(rel_error_cpd_als_result),mean(cput_cpd_als_result),mean(rel_error_cpd_nls_result),mean(cput_cpd_nls_result),mean(rel_error_vp_result),mean(cput_vp_result));
+
 end
 
-% fprintf("relative error of cp_als=%.4f, cpd_als=%.4f, cpd_nls=%.4f,vp=%.4f\n",mean(rel_error_cp_als_result),mean(rel_error_cpd_als_result),mean(rel_error_cpd_nls_result),mean(rel_error_vp_result));
-% fprintf("mean value of residul value of cp_als=%.4f, cpd_als=%.4f, cpd_nls=%.4f,vp=%.4f\n",mean(res_cp_als_result),mean(res_cpd_als_result),mean(res_cpd_nls_result),mean(res_vp_result));
-% fprintf("mean value of iteration of cp_als=%.4f, cpd_als=%.4f, cpd_nls=%.4f, vp=%.4f\n",mean(iter_cp_als_result),mean(iter_cpd_als_result),mean(iter_cpd_nls_result),mean(iter_vp_result));
-% fprintf("mean value of cpu time of cp_als=%.4f, cpd_als=%.4f, cpd_nls=%.4f, vp=%.4f\n",mean(cput_cp_als_result),mean(cput_cpd_als_result),mean(cput_cpd_nls_result),mean(cput_vp_result));
-% fprintf("vp, min=%3.4f, max=%3.4f\n",min(rel_error_vp_result),max(rel_error_vp_result));
-% fprintf("cp_als, min=%3.4f, max=%3.4f\n",min(rel_error_cp_als_result),max(rel_error_cp_als_result));
-% fprintf("cpd_als, min=%3.4f, max=%3.4f\n",min(rel_error_cpd_als_result),max(rel_error_cpd_als_result));
-% fprintf("cpd_nls, min=%3.4f, max=%3.4f\n",min(rel_error_cpd_nls_result),max(rel_error_cpd_nls_result));
 
-% Result = [res_cp_als_result-res_vp_result, res_cpd_als_result-res_vp_result, res_cpd_nls_result-res_vp_result];
-% prob=sum(all(Result >= 0, 2));
-% % prob=
-% max_gap=max(max(Result(Result >= 0)));
-% fprintf("the probability is %3.1f, the max residual is %3.2f\n",prob/trial,max_gap);
-% disp("Result matrix is:");
-% disp(Result);
-
-% disp("Rel_err matrix is:");
-% disp(Rel_err);
-
+r_fn = sprintf('../results/rel_err_exm1-%d.txt', p);
+t_fn = sprintf('../results/time_exm1-%d.txt', p);
+r_id = fopen(r_fn, 'w');
+t_id = fopen(t_fn, 'w');
 formatSpec = '%.4f %.4f %.4f %.4f\n';
-r_id = fopen('rel_err.txt', 'w');
-t_id = fopen('time.txt', 'w');
 fprintf(r_id, formatSpec, Rel_err');
 fprintf(t_id, formatSpec, Time');
 
 fclose(r_id); 
 fclose(t_id); 
-% disp("Time matrix is:");
-% disp(Time);
-
-%end
+fclose(fid); 
  
