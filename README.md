@@ -2,22 +2,20 @@
 This package includes a MATLAB implementation of the algorithm vp_pGN presented in the paper "A projected Gauss-Newton variable projection method for low rank approximations of tensors" by Tiantian He, Shenglong Hu and Zheng-Hai Huang.
 
 ### Introduction
-The `algo` folder contains our core solver `vp_pGN`
-
-The solver requires the following parameters:
+The `algo` folder contains our core solver `vp_pGN`. The solver requires the following parameters:
 ```matlab
 runhist = vp_pGN(T, Uinit, vp_paras, cg_paras);
 ```
-- `T`: factor matrices of the ground-truth tensor
-- `Uinit`: initial factor matrices
-- `vp_paras`: parameters of the variable projection method
-- `cg_paras`: parameters of the conjugate gradient method
+- `T`: factor matrices of the ground-truth tensor.
+- `Uinit`: initial factor matrices.
+- `vp_paras`: parameters of the variable projection method.
+- `cg_paras`: parameters of the conjugate gradient method.
 
 The solver returns `runhist` containing:
-- `runhist.U`, `runhist.V`, `runhist.W`: computed factor matrices
-- `runhist.fval`: the history of the relative changes of the objective function
-- `runhist.iter`: number of iterations
-- `runhist.cput`: CPU time
+- `runhist.U`, `runhist.V`, `runhist.W`: computed factor matrices.
+- `runhist.fval`: the history of the relative changes of the objective function.
+- `runhist.iter`: number of iterations.
+- `runhist.cput`: CPU time.
 
 For example:
 ```matlab
@@ -44,9 +42,14 @@ runhist = vp_pGN(T, Uinit, vp_paras, cg_paras);
 ```
 
 ### Quickstart
+The folder `examples` contains five presented in the paper.
+- `test_exm1.m`: reproduces the numerical experiments in Subsection 6.1 and tests three problem sizes: $m=n=p=100$, $m=30,n=40, p=1000$, and $m=n=100,p=10000$.
+- `test_exm2.m`: 
+- `test_exm3.m`:
+- `test_exm4.m`:
+- `test_exm5.m`:
 
+All the numerical results are saved in the folder `results`.
 
-All the numerical results are saved in the folder `results`
-
-If you have any questions about implementation, please contact Tiantian He (hetiantian@nudt.edu.cn) and  Shenglong Hu(hushenglong@nudt.edu.cn)
+If you have any questions about implementation, please contact Tiantian He (hetiantian@nudt.edu.cn) and  Shenglong Hu(hushenglong@nudt.edu.cn).
 
