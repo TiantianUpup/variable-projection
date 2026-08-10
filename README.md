@@ -1,5 +1,5 @@
 # A Projected Gauss-Newton Variable Projection Method for Low Rank Approximations of Tensors
-
+This package includes a MATLAB implementation of the algorithm vp_pGN presented in the paper "A projected Gauss-Newton variable projection method for low rank approximations of tensors" by Tiantian He, Shenglong Hu and Zheng-Hai Huang.
 
 
 ### Copyright
