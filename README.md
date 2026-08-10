@@ -43,10 +43,10 @@ runhist = vp_pGN(T, Uinit, vp_paras, cg_paras);
 
 ### Quickstart
 The folder `examples` contains five presented in the paper.
-- `test_exm1.m`: reproduces the numerical experiments in Subsection 6.1 and tests three problem sizes: $m=n=p=100$, $m=30,n=40, p=1000$, and $m=n=100,p=10000$.
-- `test_exm2.m`: reproduces the numerical experiments in Subsection 6.2 and two condition numbers are tested: $\kappa=10^3$ and $\kappa=10^4$. 
+- `test_exm1.m`: reproduces the numerical experiments in Subsection 6.1 and tests three problem sizes: $m=n=p=100$, $m=30,n=40, p=1000$, and $m=n=100,p=10000$. Note that, for the case $m=n=100,p=10000$, computing the rank-$r$ approximations for $r=1,\ldots,15$ is computationally expensive and may take several hours to complete.
+- `test_exm2.m`: reproduces the numerical experiments in Subsection 6.2 and tests two condition numbers: $\kappa=10^3$ and $\kappa=10^4$.
 - `test_exm3.m`: reproduces the numerical experiments in Subsection 6.3.
-- `test_exm4.m`: reproduces the numerical experiments in Subsection 6.4 and two different CP ranks are tested: $r_{\text{true}}=3$ and $r_{\text{true}}=5$.
+- `test_exm4.m`: reproduces the numerical experiments in Subsection 6.4  and tests two different CP ranks: $r_{\text{true}}=3$ and $r_{\text{true}}=5$.
 - `test_exm5.m`: reproduces the numerical experiments in Subsection 6.5.
 
 All the numerical results are saved in the folder `results`.
