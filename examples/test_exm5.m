@@ -14,10 +14,15 @@ addpath('../utils');
 addpath('../algo');
 
 
-fid = fopen('../results/ex5.txt','w');
-
 rng(24);
 trial=10;
+r_true=15;
+
+fid = fopen('../results/ex5.txt','w');
+myfprintf(fid, "================================ The results obtained by the four methods.=========================\n");
+myfprintf(fid, "      ||        cp_als       ||       cpd_als       ||       cpd_nls       ||       vp_pGN        || \n");
+myfprintf(fid, " rank ||  rel_er    time     ||  rel_er     time    ||  rel_er     time    ||  rel_er    time     || \n");
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% % Running history
 %%%%%%%% vp_pGN method
@@ -52,10 +57,9 @@ m=50;
 n=50;
 p=50;
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% main loop
 for r=1:15
 for i=1:trial
-    r_true=15;
-   
     U_true=rand(m,r_true);
     V_true=rand(n,r_true);
     
@@ -164,16 +168,7 @@ for i=1:trial
     count=count+1;
 end
 
-%fprintf("========================================== rank %d approximation ==========================================\n",r);
-
-if r==1
-    fprintf('================================ The results obtained by the four methods.=========================\n');
-    fprintf('      ||        cp_als       ||       cpd_als       ||       cpd_nls       ||       vp_pGN        || \n');
-    fprintf(' rank ||  rel_er    time     ||  rel_er     time    ||  rel_er     time    ||  rel_er    time     || \n');
-end
-
-fprintf(" %d    ||  %.4f     %3.2f    ||  %.4f      %3.2f   ||  %.4f      %3.2f   ||  %.4f      %3.2f   || \n",r,mean(rel_error_cp_als_result),mean(cput_cp_als_result),mean(rel_error_cpd_als_result),mean(cput_cpd_als_result),mean(rel_error_cpd_nls_result),mean(cput_cpd_nls_result),mean(rel_error_vp_result),mean(cput_vp_result));
-myfprintf(fid,"%d &%.4f &%3.2f &%.4f &%3.2f &%.4f &%3.2f &%.4f &%3.2f\n",r,mean(rel_error_cp_als_result),mean(cput_cp_als_result),mean(rel_error_cpd_als_result),mean(cput_cpd_als_result),mean(rel_error_cpd_nls_result),mean(cput_cpd_nls_result),mean(rel_error_vp_result),mean(cput_vp_result));
+myfprintf(fid," %d    ||  %.4f     %3.2f    ||  %.4f      %3.2f   ||  %.4f      %3.2f   ||  %.4f      %3.2f   || \n",r,mean(rel_error_cp_als_result),mean(cput_cp_als_result),mean(rel_error_cpd_als_result),mean(cput_cpd_als_result),mean(rel_error_cpd_nls_result),mean(cput_cpd_nls_result),mean(rel_error_vp_result),mean(cput_vp_result));
 
 end 
 
