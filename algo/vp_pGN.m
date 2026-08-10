@@ -7,7 +7,7 @@ function runhist = vp_pGN(T, Uinit, vp_paras, cg_paras)
     % Input
     % ===========================================================
     % T ...................... the factor matrices of the truth tensor
-    % Uinit .................. the factor matrices of the initial
+    % Uinit .................. the initial factor matrices
     % vp_paras ............... the parameters of the variable projection 
     % cg_paras ............... the parameters of the conjugate gradient method 
     % 
