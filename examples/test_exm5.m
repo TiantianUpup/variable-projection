@@ -9,17 +9,18 @@
 
 clc; clear all; close all;
 
-addpath('../compared_method/tensor_toolbox');
-addpath('../compared_method/tensorlab');
-addpath('../utils');
-addpath('../algo');
+addpath(fullfile('..','compared_method','tensorlab'));
+addpath(fullfile('..','compared_method','tensor_toolbox'));
+addpath(fullfile('..','utils'));
+addpath(fullfile('..','algo'));
 
-
-rng(24);
 trial=10;
 r_true=15;
 
-fid = fopen('../results/ex5.txt','w');
+setup;
+filename = fullfile(result_dir, sprintf('ex5.txt'));
+fid = fopen(filename,'w');
+
 myfprintf(fid, "================================ The results obtained by the four methods.=========================\n");
 myfprintf(fid, "      ||        cp_als       ||       cpd_als       ||       cpd_nls       ||       vp_pGN        || \n");
 myfprintf(fid, " rank ||  rel_er    time     ||  rel_er     time    ||  rel_er     time    ||  rel_er    time     || \n");

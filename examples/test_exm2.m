@@ -10,11 +10,11 @@
 
 clc; clear all; close all;
 
-addpath('../compared_method/tensorlab');
-addpath('../compared_method/tensor_toolbox');
-addpath('../utils');
-addpath('../algo');
-
+addpath(fullfile('..','compared_method','tensorlab'));
+addpath(fullfile('..','compared_method','tensor_toolbox'));
+addpath(fullfile('..','utils'));
+addpath(fullfile('..','algo'));
+    
 % Case 1: corresponds to Table 3
 kappa=1e3;
 
@@ -28,7 +28,8 @@ p=50;
 rng(24);
 trial=10;
 
-filename = sprintf('../results/ex2-%d.txt', kappa);
+setup;
+filename = fullfile(result_dir, sprintf('ex2-%d.txt', kappa));
 fid = fopen(filename,'w');
 
 myfprintf(fid, "================================ The results obtained by the four methods.=========================\n");

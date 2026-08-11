@@ -7,17 +7,18 @@
 
 
 clc; clear all; close all;
+warning('off', 'all');
 
-addpath('../compared_method/tensor_toolbox');
-addpath('../compared_method/tensorlab');
-addpath('../utils');
-addpath('../algo');
+addpath(fullfile('..','compared_method','tensorlab'));
+addpath(fullfile('..','compared_method','tensor_toolbox'));
+addpath(fullfile('..','utils'));
+addpath(fullfile('..','algo'));
 
-rng(24);
 trial=10;
 r_true=15;
 
-filename = sprintf('../results/ex3.txt');
+setup;
+filename = fullfile(result_dir, sprintf('ex3.txt'));
 fid = fopen(filename,'w');
 
 myfprintf(fid, "================================ The results obtained by the four methods.=========================\n");

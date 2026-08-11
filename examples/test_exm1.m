@@ -9,12 +9,11 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 clc; clear all; close all;
-addpath('../compared_method/tensor_toolbox');
-addpath('../compared_method/tensorlab');
-addpath('../utils');
-addpath('../algo');
 
-
+addpath(fullfile('..','compared_method','tensorlab'));
+addpath(fullfile('..','compared_method','tensor_toolbox'));
+addpath(fullfile('..','utils'));
+addpath(fullfile('..','algo'));
 
 % Case 1: corresponds to Table 1
 m=100;
@@ -32,11 +31,11 @@ p=100;
 % p=10000;
 
 
-rng(24);
 trial=10;
 r_true=15;
 
-filename = sprintf('../results/ex1-%d.txt', p);
+setup;
+filename = fullfile(result_dir, sprintf('ex1-%d.txt', p));
 fid = fopen(filename,'w');
 
 myfprintf(fid, "================================ The results obtained by the four methods.=========================\n");
@@ -74,7 +73,7 @@ Time=zeros(10,4);
 count=1;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% main loop
-for r=[12,12,13,14]
+for r=1:15
 for i=1:trial
     % truth factor matrices
     U_true=rand(m,r_true);

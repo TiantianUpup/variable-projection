@@ -21,8 +21,6 @@ function runhist = vp_pGN(T, Uinit, vp_paras, cg_paras)
     % runhist.cput .......... the output of the running time 
     %                            
 
-    %addpath('/compared_method/tensorlab');
-
     timect = cputime;
     
     U_true=T{1};
@@ -185,14 +183,9 @@ function runhist = vp_pGN(T, Uinit, vp_paras, cg_paras)
         end
 
         % Projction U, V onto Oblique manifold.
-        % if mod(iter,2)==1 % 
-            U=proj_oblique(U);
-            V=proj_oblique(V);
-        % else
-        %     U=proj_oblique_row(U);
-        %     V=proj_oblique_row(V);
-        % end    
-
+        U=proj_oblique(U);
+        V=proj_oblique(V);
+          
         % Check for convergence.
         UV=[U;V];
         relstep=t*norm(dir(:))/norm(UV(:));
@@ -218,16 +211,6 @@ function runhist = vp_pGN(T, Uinit, vp_paras, cg_paras)
    
     % calculate W
     W=W_true*((U_true'*U).*(V_true'*V))*pinv((U'*U).*(V'*V));
-
-    %MA=kr(U_true,V_true)*W_true';
-    % W_opt=kr(U,V)\MA;
-    % W_opt=pinv(kr(U,V))*MA;
-
-    % [UU,SS,VV] = svd(kr(U,V),'econ');
-    % W_opt = VV*(SS\(UU'*MA));
-
-    % W_temp=W-W_opt';
-    % fprintf("the residual of W is %3.10f\n",norm(W_temp(:)));
 
     % Update the output structure.
     runhist.U = U;
