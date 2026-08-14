@@ -27,11 +27,11 @@ function runhist = vp_pGN(T, Uinit, vp_paras, cg_paras)
     V_true=T{2};
     W_true=T{3};
 
-    U0=Uinit{1};
-    V0=Uinit{2};
+    U=Uinit{1};
+    V=Uinit{2};
     
-    [m,r] = size(U0);
-    [n,~] = size(V0);
+    [m,r] = size(U);
+    [n,~] = size(V);
     paras.m=m;
     paras.n=n;
     paras.r=r;
@@ -39,10 +39,6 @@ function runhist = vp_pGN(T, Uinit, vp_paras, cg_paras)
     % Running history
     fval=[];
 
-    U = U0;
-    V = V0;
-    WTW=W_true'*W_true;
-   
     [P, Sigma, S] = qr(U);
     S = S';
     P1=P(:,1:r);
@@ -69,6 +65,7 @@ function runhist = vp_pGN(T, Uinit, vp_paras, cg_paras)
 
     UTU=U_true'*U_true;
     VTV=V_true'*V_true;
+    WTW=W_true'*W_true;
     UTUVTV=UTU.*VTV;
     MA_norm=sum(UTUVTV(:).*WTW(:));
    
@@ -84,7 +81,6 @@ function runhist = vp_pGN(T, Uinit, vp_paras, cg_paras)
     while (iter < itmax)
         iter = iter + 1;
         
-
         Di=inv(D);
        
         % calculate B
@@ -177,10 +173,12 @@ function runhist = vp_pGN(T, Uinit, vp_paras, cg_paras)
             f_diff=fval_pre-fval_cur;
         
             if f_diff>0
-                fval_pre=fval_cur;
                 break;
             end
         end
+
+        % update the fval
+        fval_pre=fval_cur;
 
         % Projction U, V onto Oblique manifold.
         U=proj_oblique(U);

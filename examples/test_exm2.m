@@ -9,6 +9,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 clc; clear all; close all;
+warning('off', 'all');
 
 addpath(fullfile('..','compared_method','tensorlab'));
 addpath(fullfile('..','compared_method','tensor_toolbox'));
@@ -18,14 +19,13 @@ addpath(fullfile('..','algo'));
 % Case 1: corresponds to Table 3
 kappa=1e3;
 
-% % Case 2: corresponds to Table 4
+% Case 2: corresponds to Table 4
 % kappa=1e4;
 
 m=50;
 n=50;
 p=50;
 
-rng(24);
 trial=10;
 
 setup;

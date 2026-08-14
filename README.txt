@@ -1,5 +1,5 @@
-# A Projected Gauss-Newton Variable Projection Method for Low Rank Approximations of Tensors
-This package includes a MATLAB implementation of the algorithm vp_pGN presented in the paper "A projected Gauss-Newton variable projection method for low rank approximations of tensors" by Tiantian He, Shenglong Hu and Zheng-Hai Huang.
+# A projected Gauss-Newton variable projection method for low rank approximations of third order tensors
+This package includes a MATLAB implementation of the algorithm vp_pGN presented in the paper "A projected Gauss-Newton variable projection method for low rank approximations of third order tensors" by Tiantian He, Shenglong Hu and Zheng-Hai Huang.
 
 ### Introduction
 The `algo` folder contains our core solver `vp_pGN`, while the comparison packages `Tensor Toolbox` and `Tensorlab` are included in the `compared_method` folder. The solver requires the following parameters:
@@ -9,7 +9,7 @@ runhist = vp_pGN(T, Uinit, vp_paras, cg_paras);
 - `T`: factor matrices of the ground-truth tensor.
 - `Uinit`: initial factor matrices.
 - `vp_paras`: parameters of the variable projection method.
-- `cg_paras`: parameters of the conjugate gradient method.
+- `cg_paras`: parameters of the conjugate gradient subroutine.
 
 The solver returns `runhist` containing:
 - `runhist.U`, `runhist.V`, `runhist.W`: computed factor matrices.
@@ -49,6 +49,7 @@ The folder `examples` contains the five examples presented in the paper.
 - `test_exm4.m`: reproduces the numerical experiments in Subsection 6.4  and tests two different CP ranks: $r_{\text{true}}=3$ and $r_{\text{true}}=5$.
 - `test_exm5.m`: reproduces the numerical experiments in Subsection 6.5.
 
-All numerical results are saved in the `results` folder.
+All numerical results will be automatically saved in a newly generated `results` folder whenever the code is executed.
 
-If you have any questions about implementation, please contact Tiantian He (hetiantian@nudt.edu.cn) and  Shenglong Hu(hushenglong@nudt.edu.cn).
+If you have any questions about implementation, please contact anyone of us via: Tiantian He (hetiantian@nudt.edu.cn), Shenglong Hu(hushenglong@nudt.edu.cn) and Zheng-Hai Huang (huangzhenghai@tju.edu.cn).
+
