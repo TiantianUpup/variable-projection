@@ -175,7 +175,6 @@ for i=1:trial
     Time(count,:)=[cput_als,cput_cpd_als,cput_cpd_nls,cput_vp_0];
     count=count+1;
 
-    
 end
 
 myfprintf(fid," %d    ||  %.4f     %3.2f    ||  %.4f      %3.2f   ||  %.4f      %3.2f   ||  %.4f      %3.2f   || \n",r,mean(rel_error_cp_als_result),mean(cput_cp_als_result),mean(rel_error_cpd_als_result),mean(cput_cpd_als_result),mean(rel_error_cpd_nls_result),mean(cput_cpd_nls_result),mean(rel_error_vp_result),mean(cput_vp_result));
