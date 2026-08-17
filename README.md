@@ -1,5 +1,5 @@
-# A projected Gauss-Newton variable projection method for low rank approximations of third order tensors
-This package includes a MATLAB implementation of the algorithm vp_pGN presented in the paper "A projected Gauss-Newton variable projection method for low rank approximations of third order tensors" by Tiantian He, Shenglong Hu and Zheng-Hai Huang.
+# A projected Gauss-Newton variable projection method for low-rank approximations of third-order tensors
+This package includes a MATLAB implementation of the algorithm vp_pGN presented in the paper "A projected Gauss-Newton variable projection method for low-rank approximations of third-order tensors" by Tiantian He, Shenglong Hu and Zheng-Hai Huang.
 
 ### Introduction
 The `algo` folder contains our core solver `vp_pGN`, while the comparison packages `Tensor Toolbox` and `Tensorlab` are included in the `compared_method` folder. The solver requires the following parameters:
